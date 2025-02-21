@@ -2,14 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Trajan-pro';
+  src: url('/fonts/TrajanPro-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Trajan-pro-bold';
+  src: url('/fonts/TrajanPro-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Swiss-regular';
+  src: url('/fonts/Swiss-721-Roman.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Swiss-medium';
+  src: url('/fonts/Swiss-721-Medium.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Swiss-bold';
+  src: url('/fonts/Swiss-721-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #343333;
+  --trajan: 'Trajan-pro', sans-serif;
+  --trajan-bold: 'Trajan-pro-bold', sans-serif;
+  --swiss-regular: 'Swiss-regular', sans-serif;
+  --swiss-medium: 'Swiss-medium', sans-serif;
+  --swiss-bold: 'Swiss-bold', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #484848;
     --foreground: #ededed;
   }
 }
@@ -17,5 +49,9 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--swiss-regular);
+}
+
+input{
+  font-size: 16px;
 }

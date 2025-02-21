@@ -1,0 +1,48 @@
+export interface Product {
+  id: string;
+  code: string;
+  name: string;
+  publicPrice?: number | null;
+  efficiency?: number | null;
+  profesionalPrice: number;
+  actives: string;
+  properties: string[];
+  phase: string;
+  time: string;
+  discount: number;
+  quantity: number;
+}
+
+export interface QuoteState {
+  segment: 'formula' | 'quote';
+  quote: {
+    client: string;
+    phone: string;
+    id: string;
+    gift: string;
+    profesional: string;
+    generalDiscount: number;
+  };
+  kit: string;
+  products: Product[];
+}
+
+export type QuoteAction =
+  | { type: 'SET_SEGMENT'; payload: 'formula' | 'quote' }
+  | {
+      type: 'SET_CLIENT_INFO';
+      payload: {
+        field: 'client' | 'phone' | 'id' | 'gift' | 'profesional';
+        value: string;
+      };
+    }
+  | { type: 'SET_GENERAL_DISCOUNT'; payload: number }
+  | { type: 'SET_KIT'; payload: string }
+  | { type: 'ADD_PRODUCT'; payload: Product }
+  | {
+      type: 'UPDATE_PRODUCT';
+      payload: { id: string; product: Partial<Product> };
+    }
+  | { type: 'REMOVE_PRODUCT'; payload: string }
+  | { type: 'RESET_QUOTE' }
+  | { type: 'LOAD_SAVED_STATE'; payload: QuoteState };

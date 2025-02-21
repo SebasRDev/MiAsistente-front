@@ -1,0 +1,16 @@
+interface Product {
+  id: string;
+  code: string;
+  name: string;
+  publicPrice?: number | null;
+  efficiency?: number | null;
+  profesionalPrice: number;
+  actives: string;
+  properties: string[];
+  phase: string;
+  time: string;
+  discount: number;
+  quantity: number;
+}
+
+export default Product;

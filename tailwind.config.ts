@@ -14,6 +14,15 @@ export default {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
+        primary: '#658864',
+        secondary: '#A4CF85',
+      },
+      fontFamily: {
+        'Trajan-pro': 'Trajan-pro',
+        'Trajan-pro-bold': 'Trajan-pro-bold',
+        'Swiss-regular': 'Swiss-regular',
+        'Swiss-medium': 'Swiss-medium',
+        'Swiss-bold': 'Swiss-bold',
       },
     },
   },
@@ -37,8 +46,7 @@ export default {
         dark: {
           layout: {}, // dark theme layout tokens
           colors: {
-            primary: '#658864',
-            foreground: '#456ad8',
+            background: '#542526',
           }, // dark theme colors
         },
         // ... custom themes
