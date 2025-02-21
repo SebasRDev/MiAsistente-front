@@ -1,7 +1,7 @@
 /* eslint-disable react/no-children-prop */
 'use client'
 
-import { Button, PressEvent } from "@heroui/button";
+import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
 import Image from "next/image";
@@ -53,12 +53,12 @@ const Header = () => {
         </NavbarContent>
       </Navbar>
       <Drawer isOpen={isOpen} size="xs" onClose={onClose} placement="left" backdrop="blur" hideCloseButton>
-        <DrawerContent children={undefined}>
-          {(onClose: ((e: PressEvent) => void) | undefined) => (
+        <DrawerContent>
+          {() => (
             <>
               <DrawerBody className="pt-16">
-                <Listbox children={null}>
-                  <ListboxSection children={null} showDivider title="Configuración">
+                <Listbox>
+                  <ListboxSection showDivider title="Configuración">
                     <ListboxItem
                       key="quote"
                       className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -99,7 +99,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  <ListboxSection children={null} title="Administración">
+                  <ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"

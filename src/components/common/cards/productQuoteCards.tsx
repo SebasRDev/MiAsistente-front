@@ -54,7 +54,7 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
         <h4 className="text-lg font-bold">Público</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
-            value={getProductPrice(product.publicPrice, productState.quantity, 0)}
+            value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}
             format={{
               style: 'currency',
               currency: 'COP',

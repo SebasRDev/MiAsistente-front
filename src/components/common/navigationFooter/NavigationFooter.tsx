@@ -20,7 +20,7 @@ const NavigationFooter = () => {
 
   const getPDF = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${state.segment}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/quotes/${state.segment}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

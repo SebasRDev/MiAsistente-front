@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh pb-24`}
       >
-        <Providers children={undefined}>
+        <Providers>
           <Toaster richColors position="top-right" />
           <Header />
           <main className="text-foreground bg-background">

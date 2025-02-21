@@ -18,9 +18,8 @@ export function Providers({ children }: ProvidersProps) {
     <HeroUIProvider
       locale="es-ES"
       reducedMotion="user"
-      children={undefined}
     >
-      <QuoteProvider children={undefined}>
+      <QuoteProvider>
         <QueryClientProvider client={queryClient}>
           {children}
         </QueryClientProvider>

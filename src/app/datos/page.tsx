@@ -3,8 +3,15 @@ import { useQuote } from "@/context/QuoteContext";
 import { Input, Tabs, Tab } from "@heroui/react";
 import { IconPercentage } from '@tabler/icons-react';
 
+type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional';
 
-const fields = [
+interface Field {
+  label: string;
+  name: FieldName;
+  type: string;
+}
+
+const fields: Field[] = [
   {
     label: "Nombre del paciente",
     name: 'client',

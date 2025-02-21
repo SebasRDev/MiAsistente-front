@@ -26,8 +26,6 @@ const Kits = () => {
   const { data } = useSuspenseQuery(kitsOptions);
   const { dispatch } = useQuote();
 
-  console.log(data)
-
   return (
     <div className="flex flex-col gap-4">
       {data?.map((kit: Kit) => (

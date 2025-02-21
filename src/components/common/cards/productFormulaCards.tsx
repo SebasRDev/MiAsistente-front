@@ -57,7 +57,7 @@ export default function ProductFormulaCards({ product }: ProductFormulaCardProps
         <h4 className="text-lg font-bold">Valor</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
-            value={getProductPrice(product.publicPrice, productState.quantity, 0)}
+            value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}
             format={{
               style: 'currency',
               currency: 'COP',
@@ -68,7 +68,7 @@ export default function ProductFormulaCards({ product }: ProductFormulaCardProps
           />
           {productState.discount > 0 && (
             <NumberFlow
-              value={getProductPrice(product.publicPrice, productState.quantity, productState.discount)}
+              value={getProductPrice(product.publicPrice ?? 0, productState.quantity, productState.discount)}
               format={{
                 style: 'currency',
                 currency: 'COP',
