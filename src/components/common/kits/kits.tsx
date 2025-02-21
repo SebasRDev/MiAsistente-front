@@ -26,9 +26,13 @@ const Kits = () => {
   const { data } = useSuspenseQuery(kitsOptions);
   const { dispatch } = useQuote();
 
+  const kits = [...data];
+  console.log(kits)
+  console.log(data)
+
   return (
     <div className="flex flex-col gap-4">
-      {data?.map((kit: Kit) => (
+      {kits?.map((kit: Kit) => (
         <Card key={kit.id} className="w-full">
           <CardHeader className="flex flex-col items-center gap-2">
             <span className="font-bold text-primary">{kit.name}</span>
