@@ -7,14 +7,19 @@ import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, Drop
 import Image from "next/image";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
 import { useQuote } from "@/context/QuoteContext";
+import { redirect, usePathname } from "next/navigation";
 
 const Header = () => {
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const pathName = usePathname();
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
+    if (segment === 'quote' && pathName === '/kits') {
+      redirect('/productos')
+    }
   };
 
   const handleReset = () => {
