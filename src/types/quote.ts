@@ -1,3 +1,5 @@
+import { User } from '@supabase/supabase-js';
+
 export interface Product {
   id: string;
   code: string;
@@ -25,6 +27,7 @@ export interface QuoteState {
   };
   kit: string;
   products: Product[];
+  user: User | null;
 }
 
 export type QuoteAction =
@@ -45,4 +48,6 @@ export type QuoteAction =
     }
   | { type: 'REMOVE_PRODUCT'; payload: string }
   | { type: 'RESET_QUOTE' }
-  | { type: 'LOAD_SAVED_STATE'; payload: QuoteState };
+  | { type: 'LOAD_SAVED_STATE'; payload: QuoteState }
+  | { type: 'SET_USER'; payload: User | null }
+  | { type: 'CLEAR_USER' };

@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh pb-24`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh`}
       >
         <Providers>
           <Toaster richColors position="top-right" />

@@ -7,12 +7,52 @@ import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, Drop
 import Image from "next/image";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
 import { useQuote } from "@/context/QuoteContext";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
+
 
 const Header = () => {
+  const supabase = createClient()
+  const router = useRouter();
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const pathName = usePathname();
+
+  const user = state.user;
+
+  useEffect(() => {
+    // Configurar el listener para cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          dispatch({ type: 'SET_USER', payload: session.user });
+        } else if (event === 'SIGNED_OUT') {
+          dispatch({ type: 'CLEAR_USER' });
+          router.push('/');
+        }
+      }
+    );
+
+    // Verificar si hay una sesión activa al cargar el componente
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          dispatch({ type: 'SET_USER', payload: session.user });
+        }
+      } catch (error) {
+        console.error('Error al verificar la sesión:', error);
+      }
+    };
+
+    checkSession();
+
+    // Limpiar el listener cuando el componente se desmonte
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth, router, pathName, dispatch]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
@@ -27,16 +67,24 @@ const Header = () => {
     onClose();
   };
 
+  const handleLogout = async () => {
+    try {
+      supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error durante logout:', error);
+    }
+  };
+
   return (
     <>
       <Navbar isBordered>
         <NavbarContent>
-          <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+          {user && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
-          </Button>
-          <Image src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
+          </Button>}
+          <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        <NavbarContent justify="end">
+        {user && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
@@ -44,18 +92,15 @@ const Header = () => {
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola!</p>
-                <p className="font-semibold">sebas.ramirez@gmail.com</p>
+                <p className="font-semibold">{user.email}</p>
               </DropdownItem>
               <DropdownItem key="settings">Editar Perfil</DropdownItem>
-              <DropdownItem key="logout" color="danger" className="text-danger">
+              <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
                 Cerrar Sesión
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Button color="primary" size="md" variant="bordered">
-            Iniciar Sesión
-          </Button>
-        </NavbarContent>
+        </NavbarContent>}
       </Navbar>
       <Drawer isOpen={isOpen} size="xs" onClose={onClose} placement="left" backdrop="blur" hideCloseButton>
         <DrawerContent>

@@ -61,7 +61,7 @@ export default function Datos() {
   }
 
   return (
-    <div className="container max-w-6xl w-11/12 mx-auto py-7">
+    <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
       <Tabs aria-label="Opciones" radius="full" className="w-full justify-center">
         <Tab key="datos" title="Datos del cliente">
           <h1 className="font-Trajan-pro text-primary text-center text-2xl">Datos del {state.segment === 'formula' ? 'paciente' : 'cliente'}</h1>

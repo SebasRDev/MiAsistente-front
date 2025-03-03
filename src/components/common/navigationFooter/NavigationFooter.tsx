@@ -60,69 +60,70 @@ const NavigationFooter = () => {
   }
 
   return (
-    <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 dark:bg-gray-700 dark:border-gray-600 overflow-hidden">
-      <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
-        <Link
-          href="/datos"
-          className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
-        >
-          <IconUserEdit
-            stroke={1.5}
-            color={pathname == '/datos' ? "#658864" : "#6b7280"}
-            size={35}
-            className="group-hover:text-primary"
-          />
-        </Link>
-        <Link
-          href="/total"
-          className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
-        >
-          <IconReceipt2
-            stroke={1.5}
-            color={pathname == '/total' ? "#658864" : "#6b7280"}
-            size={35}
-            className="group-hover:text-primary"
-          />
-        </Link>
-        <div className="flex items-center justify-center">
-          <button data-tooltip-target="tooltip-new" type="button" className="inline-flex items-center justify-center w-10 h-10 font-medium bg-primary rounded-full hover:bg-primary group focus:ring-4 focus:ring-primary focus:outline-none dark:focus:ring-primary"
-            onClick={getPDF}
+    <>
+      {state.user && <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 dark:bg-gray-700 dark:border-gray-600 overflow-hidden">
+        <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
+          <Link
+            href="/datos"
+            className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
           >
-            <IconDownload
+            <IconUserEdit
               stroke={1.5}
-              color="#fff"
-              size={24}
+              color={pathname == '/datos' ? "#658864" : "#6b7280"}
+              size={35}
               className="group-hover:text-primary"
             />
-          </button>
+          </Link>
+          <Link
+            href="/total"
+            className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            <IconReceipt2
+              stroke={1.5}
+              color={pathname == '/total' ? "#658864" : "#6b7280"}
+              size={35}
+              className="group-hover:text-primary"
+            />
+          </Link>
+          <div className="flex items-center justify-center">
+            <button data-tooltip-target="tooltip-new" type="button" className="inline-flex items-center justify-center w-10 h-10 font-medium bg-primary rounded-full hover:bg-primary group focus:ring-4 focus:ring-primary focus:outline-none dark:focus:ring-primary"
+              onClick={getPDF}
+            >
+              <IconDownload
+                stroke={1.5}
+                color="#fff"
+                size={24}
+                className="group-hover:text-primary"
+              />
+            </button>
+          </div>
+          <Link
+            href="/productos"
+            className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            <IconVaccineBottle
+              stroke={1.5}
+              color={pathname == '/productos' ? "#658864" : "#6b7280"}
+              size={35}
+              className="group-hover:text-primary"
+            />
+          </Link>
+          <Link
+            href="/kits"
+            className={`flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800 ${state.segment === 'quote' ? 'pointer-events-none bg-gray-300' : ''}`}
+            aria-disabled={state.segment === 'quote'}
+            tabIndex={state.segment === 'quote' ? -1 : undefined}
+          >
+            <IconTagStarred
+              stroke={1.5}
+              color={pathname == '/kits' ? "#658864" : "#6b7280"}
+              size={35}
+              className="group-hover:text-primary"
+            />
+          </Link>
         </div>
-        <Link
-          href="/productos"
-          className="flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800"
-        >
-          <IconVaccineBottle
-            stroke={1.5}
-            color={pathname == '/productos' ? "#658864" : "#6b7280"}
-            size={35}
-            className="group-hover:text-primary"
-          />
-        </Link>
-        <Link
-          href="/kits"
-          className={`flex items-center justify-center group hover:bg-gray-50 dark:hover:bg-gray-800 ${state.segment === 'quote' ? 'pointer-events-none bg-gray-300' : ''}`}
-          aria-disabled={state.segment === 'quote'}
-          tabIndex={state.segment === 'quote' ? -1 : undefined}
-        >
-          <IconTagStarred
-            stroke={1.5}
-            color={pathname == '/kits' ? "#658864" : "#6b7280"}
-            size={35}
-            className="group-hover:text-primary"
-          />
-        </Link>
-      </div>
-    </div>
-
+      </div>}
+    </>
   )
 }
 
