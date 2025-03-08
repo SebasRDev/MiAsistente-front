@@ -17,6 +17,7 @@ const authErrorMessages: Record<string, string> = {
   'Network error': 'Error de conexión',
 
   // Add more error translations as needed
+  'auth/invalid-credential': 'Correo electrónico o contraseña incorrectos',
 };
 
 export function translateAuthError(errorCode: string): string {

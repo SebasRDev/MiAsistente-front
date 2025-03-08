@@ -39,17 +39,24 @@
   --swiss-bold: 'Swiss-bold', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #484848;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--swiss-regular);
+}
+
+body.formula {
+  background-image: url('/assets/leaves.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 input {

@@ -1,4 +1,4 @@
-import { User } from '@supabase/supabase-js';
+import { User } from "firebase/auth";
 
 export interface Product {
   id: string;

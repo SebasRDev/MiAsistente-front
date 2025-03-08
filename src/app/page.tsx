@@ -1,20 +1,26 @@
 'use client'
 
 import { Google } from "@/components/common/icons/icons";
-import { useQuote } from "@/context/QuoteContext";
-import { translateAuthError } from "@/utils/errorTranslations";
-import { login, signup } from "@/utils/login/actions";
+// import { translateAuthError } from "@/utils/errorTranslations";
+// import { signInRegular, signInWithGoogle, signUpUser } from "@/utils/firebase/auth";
+import { firebaseAuth } from "@/utils/firebase/config";
 import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { createSession } from "@/utils/firebase/auth-actions";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const router = useRouter();
+
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(firebaseAuth);
+  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(firebaseAuth);
+  const [signInWithGoogle] = useSignInWithGoogle(firebaseAuth);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,19 +29,20 @@ export default function Home() {
 
     try {
       let result;
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+      
       if (isLogin) {
-        result = await login(formData);
+        result = await signInWithEmailAndPassword(email, password);
       } else {
-        result = await signup(formData);
+        result = await createUserWithEmailAndPassword(email, password);
       }
 
-      if (result?.error) {
-        toast.error(translateAuthError(result.error));
-      }
-
-      if (result?.success) {
+      if (result && result.user) {
+        await createSession(result.user.uid);
         router.push('/productos');
       }
+
 
     } catch (error: any) {
       if (!error.toString().includes('NEXT_REDIRECT')) {
@@ -47,6 +54,19 @@ export default function Home() {
     }
   }
 
+  const handleSignInGoogle = async () => {
+    try {
+      const result = await signInWithGoogle();
+      if (result && result.user) {
+        console.log('Usuario:', result.user);
+        await createSession(result.user.uid);
+        router.push('/productos');
+      }
+    } catch (error) {
+      console.error("Error real:", error);
+      toast.error('An unexpected error occurred');
+    }
+  }
 
   const toggleVisibility = () => setIsVisible(!isVisible);
   return (
@@ -54,7 +74,7 @@ export default function Home() {
       <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
         <Card isBlurred className="max-w-96 w-full shrink-0">
           <CardHeader>
-            <p className="text-white text-2xl">Ingreso SkhAPP</p>
+            <p className="text-white text-center text-2xl">Mi Asistente SkinHealth</p>
           </CardHeader>
           <CardBody>
             <Button
@@ -62,6 +82,7 @@ export default function Home() {
               radius="sm"
               color="primary"
               startContent={<Google />}
+              onPress={() => handleSignInGoogle()}
             >
               Ingresar con Google
             </Button>

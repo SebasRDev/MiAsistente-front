@@ -8,68 +8,56 @@ import Image from "next/image";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
 import { useQuote } from "@/context/QuoteContext";
 import { redirect, usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { useEffect } from "react";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { firebaseAuth } from "@/utils/firebase/config";
+import { removeSession } from "@/utils/firebase/auth-actions";
 
 
 const Header = () => {
-  const supabase = createClient()
   const router = useRouter();
+  const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [user] = useAuthState(firebaseAuth);
   const pathName = usePathname();
 
-  const user = state.user;
+  const userData = state.user;
 
   useEffect(() => {
-    // Configurar el listener para cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          dispatch({ type: 'SET_USER', payload: session.user });
-        } else if (event === 'SIGNED_OUT') {
-          dispatch({ type: 'CLEAR_USER' });
-          router.push('/');
-        }
-      }
-    );
-
-    // Verificar si hay una sesión activa al cargar el componente
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          dispatch({ type: 'SET_USER', payload: session.user });
-        }
-      } catch (error) {
-        console.error('Error al verificar la sesión:', error);
-      }
-    };
-
-    checkSession();
-
-    // Limpiar el listener cuando el componente se desmonte
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase.auth, router, pathName, dispatch]);
+    if (user) {
+      dispatch({ type: 'SET_USER', payload: user });
+    } else {
+      dispatch({ type: 'CLEAR_USER' });
+    }
+  }, [user, dispatch]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
+    if (segment === 'quote'){
+      document.body.classList.remove('formula');
+    }
+
+    if (segment === 'formula'){
+      document.body.classList.add('formula')
+    }
+
     if (segment === 'quote' && pathName === '/kits') {
       redirect('/productos')
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     dispatch({ type: 'RESET_QUOTE' });
     onClose();
   };
-
+  
   const handleLogout = async () => {
     try {
-      supabase.auth.signOut();
+      dispatch({ type: 'CLEAR_USER' });
+      await removeSession();
+      await signOut();
     } catch (error) {
       console.error('Error durante logout:', error);
     }
@@ -79,12 +67,15 @@ const Header = () => {
     <>
       <Navbar isBordered>
         <NavbarContent>
-          {user && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+          {userData && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
           </Button>}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {user && <NavbarContent justify="end">
+        {userData &&<NavbarContent justify="center">
+          <h1 className="text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
+        </NavbarContent>}
+        {userData && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
@@ -92,7 +83,7 @@ const Header = () => {
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola!</p>
-                <p className="font-semibold">{user.email}</p>
+                <p className="font-semibold">{userData.email}</p>
               </DropdownItem>
               <DropdownItem key="settings">Editar Perfil</DropdownItem>
               <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
@@ -108,7 +99,7 @@ const Header = () => {
             <>
               <DrawerBody className="pt-16">
                 <Listbox>
-                  <ListboxSection showDivider title="Configuración">
+                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
                     <ListboxItem
                       key="quote"
                       className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -149,7 +140,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  <ListboxSection title="Administración">
+                  {userData?.role === 'admin' && <ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"
@@ -158,10 +149,15 @@ const Header = () => {
                           <IconUsers stroke={2} />
                         </div>
                       }
+                      onPress={() => {
+                        onClose();
+                        router.push('/admin/usuarios')
+                      }
+                      }
                     >
                       Administrar Usuarios
                     </ListboxItem>
-                  </ListboxSection>
+                  </ListboxSection>}
                 </Listbox>
               </DrawerBody>
             </>

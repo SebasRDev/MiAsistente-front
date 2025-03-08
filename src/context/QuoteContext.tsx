@@ -99,7 +99,11 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
       break;
 
     case 'RESET_QUOTE':
-      newState = defaultState;
+      newState = {
+        ...defaultState,
+        segment: state.segment,
+        user: state.user
+      };
       break;
 
     case 'LOAD_SAVED_STATE':
