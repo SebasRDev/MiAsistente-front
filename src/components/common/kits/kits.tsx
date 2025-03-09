@@ -32,7 +32,7 @@ const Kits = () => {
   return (
     <div className="flex flex-col gap-4">
       {kits?.map((kit: Kit) => (
-        <Card key={kit.id} style={{"--tw-backdrop-blur":" blur(4px)"}} className="w-full" isBlurred>
+        <Card key={kit.id} style={{ "--tw-backdrop-blur": " blur(4px)" } as React.CSSProperties} className="w-full" isBlurred>
           <CardHeader className="flex flex-col items-center gap-2">
             <h2 className="font-bold text-primary font-Trajan-pro text-xl">{kit.name}</h2>
             <p className="text-lg">{currencyFormatter.format(kit.price)}</p>

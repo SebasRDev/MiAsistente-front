@@ -153,7 +153,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  {userData?.role === 'admin' && <ListboxSection title="Administración">
+                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"
@@ -170,7 +170,7 @@ const Header = () => {
                     >
                       Administrar Usuarios
                     </ListboxItem>
-                  </ListboxSection>}
+                  </ListboxSection>) : null}
                 </Listbox>
               </DrawerBody>
             </>
