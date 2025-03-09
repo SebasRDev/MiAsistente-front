@@ -1,4 +1,5 @@
-import { User } from "firebase/auth";
+import { User } from 'firebase/auth';
+import { DocumentData } from 'firebase/firestore';
 
 export interface Product {
   id: string;
@@ -27,7 +28,7 @@ export interface QuoteState {
   };
   kit: string;
   products: Product[];
-  user: User | null;
+  user: DocumentData | null;
 }
 
 export type QuoteAction =

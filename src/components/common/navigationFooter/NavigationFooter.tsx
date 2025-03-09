@@ -1,6 +1,7 @@
 'use client'
 import { useQuote } from "@/context/QuoteContext";
 import { IconUserEdit, IconReceipt2, IconTagStarred, IconVaccineBottle, IconDownload } from "@tabler/icons-react"
+import { KitsIcon } from "@/components/common/icons/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -114,12 +115,15 @@ const NavigationFooter = () => {
             aria-disabled={state.segment === 'quote'}
             tabIndex={state.segment === 'quote' ? -1 : undefined}
           >
-            <IconTagStarred
+            <KitsIcon 
+              color={pathname == '/kits' ? "#658864" : "#6b7280"}
+            />
+            {/* <IconTagStarred
               stroke={1.5}
               color={pathname == '/kits' ? "#658864" : "#6b7280"}
               size={35}
               className="group-hover:text-primary"
-            />
+            /> */}
           </Link>
         </div>
       </div>}

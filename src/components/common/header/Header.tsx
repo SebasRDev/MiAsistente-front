@@ -12,34 +12,45 @@ import { useEffect } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { firebaseAuth } from "@/utils/firebase/config";
 import { removeSession } from "@/utils/firebase/auth-actions";
+import { getApp } from "firebase/app";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { doc, getFirestore } from "firebase/firestore";
+
+// Inicializar Firestore
+const db = getFirestore(getApp());
 
 
 const Header = () => {
+  // Usar useDocumentData para obtener los datos del usuario desde Firestore
   const router = useRouter();
   const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user] = useAuthState(firebaseAuth);
+  console.log(user);
+  const [firestoreUserData] = useDocumentData(
+    user ? doc(db, 'users', user.uid) : null
+  );
   const pathName = usePathname();
 
   const userData = state.user;
 
   useEffect(() => {
     if (user) {
-      dispatch({ type: 'SET_USER', payload: user });
+      dispatch({ type: 'SET_USER', payload: firestoreUserData });
     } else {
       dispatch({ type: 'CLEAR_USER' });
     }
-  }, [user, dispatch]);
+  }, [user, dispatch, firestoreUserData]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
-    if (segment === 'quote'){
+    if (segment === 'quote') {
       document.body.classList.remove('formula');
     }
 
-    if (segment === 'formula'){
+    if (segment === 'formula') {
       document.body.classList.add('formula')
     }
 
@@ -52,7 +63,7 @@ const Header = () => {
     dispatch({ type: 'RESET_QUOTE' });
     onClose();
   };
-  
+
   const handleLogout = async () => {
     try {
       dispatch({ type: 'CLEAR_USER' });
@@ -60,6 +71,8 @@ const Header = () => {
       await signOut();
     } catch (error) {
       console.error('Error durante logout:', error);
+    } finally {
+      redirect('/');
     }
   };
 
@@ -72,7 +85,7 @@ const Header = () => {
           </Button>}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {userData &&<NavbarContent justify="center">
+        {userData && <NavbarContent justify="center">
           <h1 className="text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
         {userData && <NavbarContent justify="end">

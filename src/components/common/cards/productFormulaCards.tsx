@@ -44,7 +44,7 @@ export default function ProductFormulaCards({ product }: ProductFormulaCardProps
     dispatch({ type: 'REMOVE_PRODUCT', payload: product.id })
   }
 
-  return <Card className="w-full" key={product.code} isBlurred style={{"--tw-backdrop-blur":" blur(4px)"}}>
+  return <Card className="w-full" key={product.code} isBlurred style={{ "--twBackdropBlur": "blur(4px)" } as React.CSSProperties}>
     <CardHeader className="flex gap-2">
       <span className="font-bold text-primary">{product.code}</span>
       {`${product.name}`}

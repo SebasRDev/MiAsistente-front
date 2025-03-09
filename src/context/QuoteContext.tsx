@@ -42,6 +42,7 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
     case 'SET_SEGMENT':
       newState = {
         ...state,
+        products: [],
         segment: action.payload
       };
       break;

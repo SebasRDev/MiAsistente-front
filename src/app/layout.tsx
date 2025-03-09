@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <Providers>
           <Toaster richColors position="top-right" />
-          <Header session={session} />
+          <Header />
           <main className="text-foreground">
             {children}
           </main>

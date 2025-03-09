@@ -44,14 +44,14 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
     dispatch({ type: 'REMOVE_PRODUCT', payload: product.id })
   }
 
-  return <Card className="w-full" key={product.code} isBlurred style={{"--tw-backdrop-blur":" blur(4px)"}}>
+  return <Card className="w-full" key={product.code}>
     <CardHeader className="flex gap-2">
       <span className="font-bold text-primary">{product.code}</span>
       {`${product.name}`}
     </CardHeader>
     <CardBody className="flex-row gap-10">
       <div>
-        <h4 className="text-lg font-bold">Público</h4>
+        <h4 className="text-lg font-bold">{product.publicPrice === null && 'Rendimiento'}</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
             value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}
