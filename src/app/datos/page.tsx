@@ -61,10 +61,10 @@ export default function Datos() {
   }
 
   return (
-    <div className="container max-w-6xl w-11/12 mx-auto py-7">
+    <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
       <Tabs aria-label="Opciones" radius="full" className="w-full justify-center">
         <Tab key="datos" title="Datos del cliente">
-          <h1 className="font-Trajan-pro text-primary text-center text-2xl">Datos del {state.segment === 'formula' ? 'paciente' : 'cliente'}</h1>
+          <h1 className="font-Trajan-pro-bold text-primary text-center text-2xl">Datos del {state.segment === 'formula' ? 'paciente' : 'cliente'}</h1>
           <div className="flex flex-col gap-4">
             {fields.map(({ label, type, name }) => <Input
               key={label} type={type}
@@ -76,7 +76,7 @@ export default function Datos() {
           </div>
         </Tab>
         <Tab key="descuento-general" title="Descuento General">
-          <h2 className="font-Trajan-pro text-primary text-center text-2xl">Descuento General</h2>
+          <h2 className="font-Trajan-pro-bold text-primary text-center text-2xl">Descuento General</h2>
           <Input
             type="tel"
             label="Descuento General"

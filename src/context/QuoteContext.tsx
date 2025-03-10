@@ -14,7 +14,8 @@ const defaultState: QuoteState = {
     generalDiscount: 0,
   },
   kit: '',
-  products: []
+  products: [],
+  user: undefined
 };
 
 const getInitialState = (): QuoteState => {
@@ -41,6 +42,7 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
     case 'SET_SEGMENT':
       newState = {
         ...state,
+        products: [],
         segment: action.payload
       };
       break;
@@ -98,11 +100,29 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
       break;
 
     case 'RESET_QUOTE':
-      newState = defaultState;
+      newState = {
+        ...defaultState,
+        segment: state.segment,
+        user: state.user
+      };
       break;
 
     case 'LOAD_SAVED_STATE':
       newState = action.payload;
+      break;
+
+    case 'SET_USER':
+      newState = {
+        ...state,
+        user: action.payload
+      };
+      break;
+
+    case 'CLEAR_USER':
+      newState = {
+        ...state,
+        user: undefined
+      };
       break;
 
     default:

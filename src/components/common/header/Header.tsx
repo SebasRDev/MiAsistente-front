@@ -7,36 +7,88 @@ import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, Drop
 import Image from "next/image";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
 import { useQuote } from "@/context/QuoteContext";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { firebaseAuth } from "@/utils/firebase/config";
+import { removeSession } from "@/utils/firebase/auth-actions";
+import { getApp } from "firebase/app";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { doc, getFirestore } from "firebase/firestore";
+
+// Inicializar Firestore
+const db = getFirestore(getApp());
+
 
 const Header = () => {
+  // Usar useDocumentData para obtener los datos del usuario desde Firestore
+  const router = useRouter();
+  const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [user] = useAuthState(firebaseAuth);
+  console.log(user);
+  const [firestoreUserData] = useDocumentData(
+    user ? doc(db, 'users', user.uid) : null
+  );
   const pathName = usePathname();
+
+  const userData = state.user;
+
+  useEffect(() => {
+    if (user) {
+      dispatch({ type: 'SET_USER', payload: firestoreUserData });
+    } else {
+      dispatch({ type: 'CLEAR_USER' });
+    }
+  }, [user, dispatch, firestoreUserData]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
+    if (segment === 'quote') {
+      document.body.classList.remove('formula');
+    }
+
+    if (segment === 'formula') {
+      document.body.classList.add('formula')
+    }
+
     if (segment === 'quote' && pathName === '/kits') {
       redirect('/productos')
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     dispatch({ type: 'RESET_QUOTE' });
     onClose();
+  };
+
+  const handleLogout = async () => {
+    try {
+      dispatch({ type: 'CLEAR_USER' });
+      await removeSession();
+      await signOut();
+    } catch (error) {
+      console.error('Error durante logout:', error);
+    } finally {
+      redirect('/');
+    }
   };
 
   return (
     <>
       <Navbar isBordered>
         <NavbarContent>
-          <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+          {userData && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
-          </Button>
-          <Image src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
+          </Button>}
+          <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        <NavbarContent justify="end">
+        {userData && <NavbarContent justify="center">
+          <h1 className="text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
+        </NavbarContent>}
+        {userData && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
@@ -44,18 +96,15 @@ const Header = () => {
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola!</p>
-                <p className="font-semibold">sebas.ramirez@gmail.com</p>
+                <p className="font-semibold">{userData.email}</p>
               </DropdownItem>
               <DropdownItem key="settings">Editar Perfil</DropdownItem>
-              <DropdownItem key="logout" color="danger" className="text-danger">
+              <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
                 Cerrar Sesión
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Button color="primary" size="md" variant="bordered">
-            Iniciar Sesión
-          </Button>
-        </NavbarContent>
+        </NavbarContent>}
       </Navbar>
       <Drawer isOpen={isOpen} size="xs" onClose={onClose} placement="left" backdrop="blur" hideCloseButton>
         <DrawerContent>
@@ -63,7 +112,7 @@ const Header = () => {
             <>
               <DrawerBody className="pt-16">
                 <Listbox>
-                  <ListboxSection showDivider title="Configuración">
+                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
                     <ListboxItem
                       key="quote"
                       className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -104,7 +153,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  <ListboxSection title="Administración">
+                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"
@@ -113,10 +162,15 @@ const Header = () => {
                           <IconUsers stroke={2} />
                         </div>
                       }
+                      onPress={() => {
+                        onClose();
+                        router.push('/admin/usuarios')
+                      }
+                      }
                     >
                       Administrar Usuarios
                     </ListboxItem>
-                  </ListboxSection>
+                  </ListboxSection>) : null}
                 </Listbox>
               </DrawerBody>
             </>

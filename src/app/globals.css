@@ -39,12 +39,12 @@
   --swiss-bold: 'Swiss-bold', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #484848;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
@@ -52,6 +52,27 @@ body {
   font-family: var(--swiss-regular);
 }
 
-input{
+body.formula {
+  background-image: url('/assets/leaves.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+input {
   font-size: 16px;
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+  height: calc(100dvh - 65px);
+  background-image: url('/assets/login_bg.webp');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }

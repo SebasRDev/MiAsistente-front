@@ -9,7 +9,7 @@ export default async function Productos() {
   void queryClient.prefetchQuery(kitsOptions)
 
   return (
-    <div className="container max-w-6xl w-11/12 mx-auto py-7">
+    <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Kits />
       </HydrationBoundary>

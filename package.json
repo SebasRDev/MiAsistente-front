@@ -13,14 +13,15 @@
     "@heroui/navbar": "^2.2.12",
     "@heroui/react": "^2.7.2",
     "@number-flow/react": "^0.5.5",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.48.1",
     "@tabler/icons-react": "^3.30.0",
     "@tanstack/react-query": "^5.66.7",
+    "firebase": "^11.4.0",
+    "firebase-admin": "^13.2.0",
     "framer-motion": "^12.4.5",
     "next": "15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-firebase-hooks": "^5.1.1",
     "sonner": "^2.0.1"
   },
   "devDependencies": {

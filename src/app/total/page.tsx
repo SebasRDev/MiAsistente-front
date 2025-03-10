@@ -69,7 +69,7 @@ export default function Datos() {
   }
 
   return (
-    <div className="container max-w-6xl w-11/12 mx-auto py-7">
+    <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
       <h1 className="font-Trajan-pro text-primary text-center text-2xl">Resumen General</h1>
       <div className="flex flex-col gap-4">
         {fields.map(({ label, value }) => <p key={label}>{label} <span className="font-bold">{value}</span></p>)}

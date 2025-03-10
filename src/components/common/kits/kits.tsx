@@ -3,6 +3,7 @@
 import { Kit } from "@/app/kits/kit.interface";
 import { kitsOptions } from "@/app/kits/kits";
 import { useQuote } from "@/context/QuoteContext";
+import { currencyFormatter } from "@/utils/product";
 import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 import { IconMoon, IconSun, IconSunMoon } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -27,16 +28,14 @@ const Kits = () => {
   const { dispatch } = useQuote();
 
   const kits = [...data];
-  console.log(kits)
-  console.log(data)
 
   return (
     <div className="flex flex-col gap-4">
       {kits?.map((kit: Kit) => (
-        <Card key={kit.id} className="w-full">
+        <Card key={kit.id} style={{ "--tw-backdrop-blur": " blur(4px)" } as React.CSSProperties} className="w-full" isBlurred>
           <CardHeader className="flex flex-col items-center gap-2">
-            <span className="font-bold text-primary">{kit.name}</span>
-            {`${kit.price} COP`}
+            <h2 className="font-bold text-primary font-Trajan-pro text-xl">{kit.name}</h2>
+            <p className="text-lg">{currencyFormatter.format(kit.price)}</p>
           </CardHeader>
           <CardBody>
             {
@@ -55,7 +54,7 @@ const Kits = () => {
               size="md"
               onPress={() => dispatch({ type: 'SET_KIT', payload: kit.id })}
             >
-              Comprar
+              Añadir
             </Button>
           </CardFooter>
         </Card>

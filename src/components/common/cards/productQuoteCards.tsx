@@ -51,7 +51,7 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
     </CardHeader>
     <CardBody className="flex-row gap-10">
       <div>
-        <h4 className="text-lg font-bold">Público</h4>
+        <h4 className="text-lg font-bold">{product.publicPrice === null && 'Rendimiento'}</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
             value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}

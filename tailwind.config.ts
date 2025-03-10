@@ -43,12 +43,6 @@ export default {
             },
           }, // light theme colors
         },
-        dark: {
-          layout: {}, // dark theme layout tokens
-          colors: {
-            background: '#542526',
-          }, // dark theme colors
-        },
         // ... custom themes
       },
     }),
