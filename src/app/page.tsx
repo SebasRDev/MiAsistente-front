@@ -2,6 +2,8 @@
 
 import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
+import { getApp } from "firebase/app";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
@@ -10,7 +12,6 @@ import { toast } from "sonner";
 import { Google } from "@/components/common/icons/icons";
 import { createSession } from "@/utils/firebase/auth-actions";
 import { firebaseAuth } from "@/utils/firebase/config";
-
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -58,6 +59,54 @@ export default function Home() {
     try {
       const result = await signInWithGoogle();
       if (result && result.user) {
+        if (result.user.photoURL) {
+          const db = getFirestore(getApp());
+          const userDocRef = doc(db, 'users', result.user.uid);
+  
+          const userDoc = await getDoc(userDocRef);
+          
+          // Procesar displayName para obtener nombre y apellido
+          const displayName = result.user.displayName || '';
+          const nameParts = displayName.split(' ');
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.slice(1).join(' ') || '';
+          
+          if (!userDoc.exists()) {
+            // Si el usuario no existe, crear un documento nuevo
+            await setDoc(userDocRef, {
+              email: result.user.email,
+              name: firstName,
+              lastName: lastName,
+              avatar: result.user.photoURL,
+              createdAt: new Date()
+            });
+          } else {
+            // Si el usuario existe, verificar qué campos necesitan actualizarse
+            const userData = userDoc.data();
+            const updates: any = {};
+            
+            // Verificar si el avatar ha cambiado
+            if (!userData.avatar || userData.avatar !== result.user.photoURL) {
+              updates.avatar = result.user.photoURL;
+            }
+            
+            // Verificar si el nombre ha cambiado
+            if (!userData.name || userData.name !== firstName) {
+              updates.name = firstName;
+            }
+            
+            // Verificar si el apellido ha cambiado
+            if (!userData.lastName || userData.lastName !== lastName) {
+              updates.lastName = lastName;
+            }
+            
+            // Solo actualizar si hay cambios
+            if (Object.keys(updates).length > 0) {
+              await setDoc(userDocRef, updates, { merge: true });
+            }
+          }
+        }
+  
         await createSession(result.user.uid);
         router.push('/productos');
       }

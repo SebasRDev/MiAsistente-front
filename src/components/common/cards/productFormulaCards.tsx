@@ -16,7 +16,7 @@ interface ProductFormulaCardProps {
 }
 
 export default function ProductFormulaCards({ product, handleBondades }: ProductFormulaCardProps) {
-  const { dispatch } = useQuote();
+  const { state, dispatch } = useQuote();
 
   const [productState, setProductState] = useState({
     quantity: product.quantity,
@@ -59,7 +59,7 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
         <h4 className="text-lg font-bold">Valor</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
-            value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}
+            value={getProductPrice(product.publicPrice ?? 0, productState.quantity)}
             format={{
               style: 'currency',
               currency: 'COP',
@@ -68,9 +68,11 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
             }}
             className="text-success-700"
           />
-          {productState.discount > 0 && (
+          {(productState.discount > 0 || state.quote.generalDiscount > 0) && (
             <NumberFlow
-              value={getProductPrice(product.publicPrice ?? 0, productState.quantity, productState.discount)}
+              value={
+                getProductPrice(product.publicPrice ?? 0, productState.quantity, productState.discount, state.quote.generalDiscount)
+              }
               format={{
                 style: 'currency',
                 currency: 'COP',

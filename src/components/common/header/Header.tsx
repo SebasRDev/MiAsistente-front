@@ -47,6 +47,8 @@ const Header = () => {
 
   useEffect(() => {
     if (user) {
+      console.log(firestoreUserData);
+      console.log(user);
       dispatch({ type: 'SET_USER', payload: firestoreUserData });
     } else {
       dispatch({ type: 'CLEAR_USER' });
@@ -93,11 +95,11 @@ const Header = () => {
         {userData && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
-              <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
+              <Avatar className="cursor-pointer" isBordered showFallback src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
             </DropdownTrigger>
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Hola!</p>
+                <p className="font-semibold">Hola! {state.user?.name}</p>
                 <p className="font-semibold">{userData.email}</p>
               </DropdownItem>
               <DropdownItem key="settings">Editar Perfil</DropdownItem>
