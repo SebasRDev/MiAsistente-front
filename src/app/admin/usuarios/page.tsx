@@ -1,6 +1,6 @@
 'use client'
-import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor } from '@heroui/react';
-import { IconSearch } from '@tabler/icons-react';
+import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor, Chip } from '@heroui/react';
+import { IconCircleDashedCheck, IconCircleDashedX, IconSearch } from '@tabler/icons-react';
 import { getApp } from 'firebase/app';
 import { getFirestore, collection, DocumentData, doc, updateDoc } from 'firebase/firestore';
 import { useCallback, useMemo, useState } from "react";
@@ -12,6 +12,7 @@ const headerColumns = [
   { name: "NOMBRE", uid: "name", sortable: true },
   { name: "EMAIL", uid: "email", sortable: true },
   { name: "ROL", uid: "role", sortable: true },
+  { name: "PERIL COMPLETO", uid: "isProfileComplete", sortable: true },
   { name: "STATUS", uid: "approved", sortable: true },
   // { name: "ACCIONES", uid: "actions" },
 ];
@@ -152,6 +153,20 @@ export default function AdminUsers() {
               <TableCell>{doc.data()?.email}</TableCell>
               <TableCell>{doc.data()?.role}</TableCell>
               <TableCell>
+                <Chip
+                  size='md'
+                  variant='flat'
+                  color={doc.data()?.isProfileComplete ? 'success' : 'warning'}
+                  startContent={
+                    doc.data()?.isProfileComplete
+                      ? <IconCircleDashedCheck stroke={1.5} size={20} />
+                      : <IconCircleDashedX stroke={1.5} size={20} />
+                  }
+                >
+                  {doc.data()?.isProfileComplete ? 'Completo' : 'Incompleto'}
+                </Chip>
+              </TableCell>
+              <TableCell>
                 <Switch
                   isSelected={doc.data()?.approved}
                   color="success"
@@ -160,7 +175,6 @@ export default function AdminUsers() {
                     (value: boolean) => updateUser(doc.id, value)
                   }
                 />
-                {doc.data()?.status}
               </TableCell>
             </TableRow>
           )}
