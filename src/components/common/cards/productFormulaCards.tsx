@@ -11,10 +11,11 @@ import { getProductPrice } from "@/utils/product"
 
 interface ProductFormulaCardProps {
   key?: string
-  product: Product
+  product: Product,
+  handleBondades: (product: Product) => void
 }
 
-export default function ProductFormulaCards({ product }: ProductFormulaCardProps) {
+export default function ProductFormulaCards({ product, handleBondades }: ProductFormulaCardProps) {
   const { dispatch } = useQuote();
 
   const [productState, setProductState] = useState({
@@ -125,6 +126,7 @@ export default function ProductFormulaCards({ product }: ProductFormulaCardProps
         variant="solid"
         color="primary"
         size="md"
+        onPress={() => handleBondades(product)}
       >
         Bondades
       </Button>
