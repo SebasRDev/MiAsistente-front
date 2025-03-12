@@ -1,16 +1,16 @@
 'use client'
 
-import { Google } from "@/components/common/icons/icons";
-// import { translateAuthError } from "@/utils/errorTranslations";
-// import { signInRegular, signInWithGoogle, signUpUser } from "@/utils/firebase/auth";
-import { firebaseAuth } from "@/utils/firebase/config";
 import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+import React, { useState } from "react";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { toast } from "sonner";
+
+import { Google } from "@/components/common/icons/icons";
 import { createSession } from "@/utils/firebase/auth-actions";
+import { firebaseAuth } from "@/utils/firebase/config";
+
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);

@@ -1,13 +1,15 @@
-/* eslint-disable react/no-children-prop */
+
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/app/providers";
+import { cookies } from "next/headers";
 import { ReactNode } from "react";
+import { Toaster } from "sonner";
+
+import { Providers } from "@/app/providers";
 import Header from "@/components/common/header/Header";
 import NavigationFooter from "@/components/common/navigationFooter/NavigationFooter";
-import { Toaster } from "sonner";
-import { cookies } from "next/headers";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

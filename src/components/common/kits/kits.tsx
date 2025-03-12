@@ -1,12 +1,14 @@
 'use client'
 
+import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
+import { IconMoon, IconSun, IconSunMoon } from "@tabler/icons-react";
+import { useSuspenseQuery } from "@tanstack/react-query"
+import React from "react";
+
 import { Kit } from "@/app/kits/kit.interface";
 import { kitsOptions } from "@/app/kits/kits";
 import { useQuote } from "@/context/QuoteContext";
 import { currencyFormatter } from "@/utils/product";
-import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
-import { IconMoon, IconSun, IconSunMoon } from "@tabler/icons-react";
-import { useSuspenseQuery } from "@tanstack/react-query"
 
 const Usage = ({ time }: { time: string }) => {
   switch (time) {

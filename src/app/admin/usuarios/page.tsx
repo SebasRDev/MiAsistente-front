@@ -104,7 +104,7 @@ export default function AdminUsers() {
       const userRef = doc(getFirestore(getApp()), 'users', id);
       await updateDoc(userRef, { approved: status });
     } catch (error) {
-      toast.error("Error al actualizar el usuario");
+      toast.error("Error al actualizar el usuario : " + error);
     }
   }
 

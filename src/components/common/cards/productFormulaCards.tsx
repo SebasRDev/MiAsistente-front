@@ -1,12 +1,13 @@
 'use client'
 
-import { useQuote } from "@/context/QuoteContext"
-import { Product } from "@/types/quote"
-import { getProductPrice } from "@/utils/product"
 import { Button, Card, CardBody, CardFooter, CardHeader, Input } from "@heroui/react"
 import NumberFlow from "@number-flow/react"
 import { IconMinus, IconPercentage, IconPlus, IconTrash } from "@tabler/icons-react"
-import { useState } from "react"
+import React, { useState } from "react"
+
+import { useQuote } from "@/context/QuoteContext"
+import { Product } from "@/types/quote"
+import { getProductPrice } from "@/utils/product"
 
 interface ProductFormulaCardProps {
   key?: string

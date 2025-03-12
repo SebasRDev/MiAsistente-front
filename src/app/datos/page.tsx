@@ -1,7 +1,8 @@
 'use client'
-import { useQuote } from "@/context/QuoteContext";
 import { Input, Tabs, Tab } from "@heroui/react";
 import { IconPercentage } from '@tabler/icons-react';
+
+import { useQuote } from "@/context/QuoteContext";
 
 type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional';
 

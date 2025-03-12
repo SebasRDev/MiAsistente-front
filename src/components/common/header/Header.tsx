@@ -1,20 +1,21 @@
-/* eslint-disable react/no-children-prop */
+
 'use client'
 
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
-import Image from "next/image";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
-import { useQuote } from "@/context/QuoteContext";
+import { getApp } from "firebase/app";
+import { doc, getFirestore } from "firebase/firestore";
+import Image from "next/image";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
-import { firebaseAuth } from "@/utils/firebase/config";
-import { removeSession } from "@/utils/firebase/auth-actions";
-import { getApp } from "firebase/app";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { doc, getFirestore } from "firebase/firestore";
+
+import { useQuote } from "@/context/QuoteContext";
+import { removeSession } from "@/utils/firebase/auth-actions";
+import { firebaseAuth } from "@/utils/firebase/config";
 
 // Inicializar Firestore
 const db = getFirestore(getApp());
