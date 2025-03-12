@@ -1,7 +1,8 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
 import { getQueryClient } from "@/app/get-query-client";
 import { productOptions } from "@/app/productos/product";
 import Products from "@/components/common/products/products";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 export default async function Productos() {
   const queryClient = getQueryClient()

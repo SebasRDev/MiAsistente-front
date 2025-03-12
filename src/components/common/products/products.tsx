@@ -1,13 +1,14 @@
 'use client'
 
+import { Autocomplete, AutocompleteItem } from "@heroui/react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+
 import { productOptions } from "@/app/productos/product"
 import ProductFormulaCards from "@/components/common/cards/productFormulaCards"
 import ProductQuoteCards from "@/components/common/cards/productQuoteCards"
 import { CheckIcon } from "@/components/common/icons/icons"
 import { useQuote } from "@/context/QuoteContext"
 import { Product } from "@/types/quote"
-import { Autocomplete, AutocompleteItem } from "@heroui/react"
-import { useSuspenseQuery } from "@tanstack/react-query"
 
 const Products = () => {
   const { state, dispatch } = useQuote();

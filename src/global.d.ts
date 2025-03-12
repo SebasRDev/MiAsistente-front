@@ -1,7 +1,6 @@
 /// <reference types="react" />
 
 declare namespace JSX {
-  interface IntrinsicElements {
-    [elemName: string]: unknown;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface IntrinsicElements extends React.JSX.IntrinsicElements {}
 }

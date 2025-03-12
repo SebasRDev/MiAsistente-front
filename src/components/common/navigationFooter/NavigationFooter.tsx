@@ -1,10 +1,11 @@
 'use client'
-import { useQuote } from "@/context/QuoteContext";
 import { IconUserEdit, IconReceipt2, IconTagStarred, IconVaccineBottle, IconDownload } from "@tabler/icons-react"
-import { KitsIcon } from "@/components/common/icons/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+
+import { KitsIcon } from "@/components/common/icons/icons";
+import { useQuote } from "@/context/QuoteContext";
 
 const NavigationFooter = () => {
   const { state } = useQuote();
@@ -115,7 +116,7 @@ const NavigationFooter = () => {
             aria-disabled={state.segment === 'quote'}
             tabIndex={state.segment === 'quote' ? -1 : undefined}
           >
-            <KitsIcon 
+            <KitsIcon
               color={pathname == '/kits' ? "#658864" : "#6b7280"}
             />
             {/* <IconTagStarred
