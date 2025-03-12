@@ -7,7 +7,7 @@ import { useState } from "react"
 
 import { useQuote } from "@/context/QuoteContext"
 import { Product } from "@/types/quote"
-import { getProductPrice } from "@/utils/product"
+import { getProductEfficiency, getProductPrice } from "@/utils/product"
 
 interface ProductQuoteCardProps {
   key?: string
@@ -15,7 +15,7 @@ interface ProductQuoteCardProps {
 }
 
 export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
-  const { dispatch } = useQuote();
+  const { state, dispatch } = useQuote();
 
   const [productState, setProductState] = useState({
     quantity: product.quantity,
@@ -55,13 +55,7 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
         <h4 className="text-lg font-bold">{product.publicPrice === null && 'Rendimiento'}</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
-            value={getProductPrice(product.publicPrice ?? 0, productState.quantity, 0)}
-            format={{
-              style: 'currency',
-              currency: 'COP',
-              currencyDisplay: 'narrowSymbol',
-              trailingZeroDisplay: 'stripIfInteger'
-            }}
+            value={getProductEfficiency(product.efficiency ?? 0, productState.quantity)}
             className="text-success-700"
           />
         </div>
@@ -70,7 +64,7 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
         <h4 className="text-lg font-bold">Profesional</h4>
         <div className="flex gap-2 items-center">
           <NumberFlow
-            value={getProductPrice(product.profesionalPrice, productState.quantity, 0)}
+            value={getProductPrice(product.profesionalPrice, productState.quantity)}
             format={{
               style: 'currency',
               currency: 'COP',
@@ -79,9 +73,11 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
             }}
             className="text-success-700"
           />
-          {productState.discount > 0 && (
+          {(productState.discount > 0 || state.quote.generalDiscount > 0) && (
             <NumberFlow
-              value={getProductPrice(product.profesionalPrice, productState.quantity, productState.discount)}
+              value={
+                getProductPrice(product.profesionalPrice, productState.quantity, productState.discount, state.quote.generalDiscount)
+              }
               format={{
                 style: 'currency',
                 currency: 'COP',

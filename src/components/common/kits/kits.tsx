@@ -4,7 +4,9 @@ import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 import { IconMoon, IconPlus, IconSun, IconSunMoon, IconX } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 import { Kit } from "@/app/kits/kit.interface";
 import { kitsOptions } from "@/app/kits/kits";
@@ -30,8 +32,30 @@ const Kits = () => {
   const { data } = useSuspenseQuery(kitsOptions);
   const [showKits, setShowKits] = useState<string | null>(null);
   const { dispatch } = useQuote();
+  const router = useRouter();
 
   const kits = [...data];
+
+  const handleAddKit = (kit: Kit) => {
+    try {
+      dispatch({ type: 'SET_KIT', payload: kit.id })
+      kit.kitProducts.forEach(({ product, quantity }) => {
+        dispatch({
+          type: 'ADD_PRODUCT',
+          payload: {
+            ...product,
+            quantity: quantity,
+            discount: 0,
+            instanceId: `${product.id}_${Date.now()}`
+          }
+        })
+      })
+      toast.success(`${kit.name} añadido correctamente`);
+      router.push('/productos');
+    } catch (error) {
+      toast.error(`Error al añadir ${kit.name}`);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -102,7 +126,7 @@ const Kits = () => {
                     <Button
                       color="primary"
                       size="md"
-                      onPress={() => dispatch({ type: 'SET_KIT', payload: kit.id })}
+                      onPress={() => handleAddKit(kit)}
                     >
                       Añadir
                     </Button>

@@ -3,16 +3,22 @@ import { Product } from '@/types/quote';
 export const getProductPrice = (
   price: number,
   quantity: number,
-  discount: number
+  discount: number = 0,
+  generalDiscount: number = 0
 ): number => {
   if (!price || !quantity) return 0;
-  return price * quantity - price * quantity * (discount / 100);
+  return price * quantity - price * quantity * (discount / 100) - price * quantity * (generalDiscount / 100);
+};
+
+export const getProductEfficiency = (effieciency: number, quantity: number): number => {
+  if (!effieciency || !quantity) return 0;
+  return effieciency * quantity;
 };
 
 export const currencyFormatter = new Intl.NumberFormat('es-CO', {
   style: 'currency',
   currency: 'COP',
-  minimumFractionDigits: 1,
+  minimumFractionDigits: 0,
   maximumFractionDigits: 1,
 });
 
@@ -29,7 +35,8 @@ interface SummaryTotals {
 
 export const calculateSummaryTotals = (
   products: Product[],
-  priceProperty: 'profesionalPrice' | 'publicPrice'
+  priceProperty: 'profesionalPrice' | 'publicPrice',
+  generalDiscount: number = 0
 ): SummaryTotals => {
   // Filter products with type guard
   const homeProducts = products.filter((prod) => prod.efficiency === null);
@@ -39,7 +46,7 @@ export const calculateSummaryTotals = (
   const totalToPay = products.reduce((acc, curr) => {
     const price = curr[priceProperty];
     if (price === null || price === undefined) return acc;
-    return acc + getProductPrice(price, curr.quantity ?? 0, curr.discount ?? 0);
+    return acc + getProductPrice(price, curr.quantity ?? 0, curr.discount ?? 0, generalDiscount);
   }, 0);
 
   const totalNoDiscount = products.reduce((acc, curr) => {

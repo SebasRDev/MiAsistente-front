@@ -5,7 +5,7 @@ import { useQuote } from '@/context/QuoteContext';
 import { calculateSummaryTotals, currencyFormatter } from '../../utils/product';
 export default function Datos() {
   const { state } = useQuote();
-  const { totalToPay, totalNoDiscount, genDiscount, totalProductsQtty, totalPublic, profit, profitability, averageEfficiency } = state.segment === 'formula' ? calculateSummaryTotals(state.products, 'publicPrice') : calculateSummaryTotals(state.products, 'profesionalPrice');
+  const { totalToPay, totalNoDiscount, genDiscount, totalProductsQtty, totalPublic, profit, profitability, averageEfficiency } = state.segment === 'formula' ? calculateSummaryTotals(state.products, 'publicPrice', state.quote.generalDiscount) : calculateSummaryTotals(state.products, 'profesionalPrice', state.quote.generalDiscount);
 
   let fields;
   switch (state.segment) {

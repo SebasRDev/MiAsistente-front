@@ -47,6 +47,8 @@ const Header = () => {
 
   useEffect(() => {
     if (user) {
+      console.log(firestoreUserData);
+      console.log(user);
       dispatch({ type: 'SET_USER', payload: firestoreUserData });
     } else {
       dispatch({ type: 'CLEAR_USER' });
