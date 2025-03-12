@@ -25,7 +25,7 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
   const handleQuantity = (value: number) => {
     const newVal = productState.quantity + value
     setProductState({ ...productState, quantity: newVal })
-    dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, product: { quantity: newVal } } })
+    dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, instanceId: product.instanceId, product: { quantity: newVal } } })
   }
 
   const handleDiscount = (value: number) => {
@@ -34,15 +34,15 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
     }
     if (value > 100) {
       setProductState({ ...productState, discount: 100 })
-      dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, product: { discount: 100 } } })
+      dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, instanceId: product.instanceId, product: { discount: 100 } } })
       return
     }
     setProductState({ ...productState, discount: value })
-    dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, product: { discount: value } } })
+    dispatch({ type: 'UPDATE_PRODUCT', payload: { id: product.id, instanceId: product.instanceId, product: { discount: value } } })
   }
 
   const handleRemove = () => {
-    dispatch({ type: 'REMOVE_PRODUCT', payload: product.id })
+    dispatch({ type: 'REMOVE_PRODUCT', payload: product.id, instanceId: product.instanceId })
   }
 
   return <Card className="w-full" key={product.code}>
