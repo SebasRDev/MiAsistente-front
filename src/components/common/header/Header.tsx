@@ -27,7 +27,7 @@ const Header = () => {
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user] = useAuthState(firebaseAuth);
-  console.log(user);
+
   const [firestoreUserData] = useDocumentData(
     user ? doc(db, 'users', user.uid) : null
   );

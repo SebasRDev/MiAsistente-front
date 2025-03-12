@@ -31,7 +31,7 @@ export default function Home() {
       let result;
       const email = formData.get('email') as string;
       const password = formData.get('password') as string;
-      
+
       if (isLogin) {
         result = await signInWithEmailAndPassword(email, password);
       } else {
@@ -58,7 +58,6 @@ export default function Home() {
     try {
       const result = await signInWithGoogle();
       if (result && result.user) {
-        console.log('Usuario:', result.user);
         await createSession(result.user.uid);
         router.push('/productos');
       }
