@@ -52,11 +52,19 @@ body {
   font-family: var(--swiss-regular);
 }
 
-body.formula {
-  background-image: url('/assets/leaves.jpeg');
+body.formula::after {
+  position: fixed;
+  content: '';
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-image: url('/assets/ai_leaves.webp');
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
+  z-index: 0;
 }
 
 input {

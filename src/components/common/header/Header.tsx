@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 
 'use client'
 
@@ -29,6 +30,14 @@ const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user] = useAuthState(firebaseAuth);
 
+  useEffect(() => {
+    if (state.segment === 'quote') {
+      document.body.classList.remove('formula');
+    } else if (state.segment === 'formula') {
+      document.body.classList.add('formula');
+    }
+  }, [state.segment]);
+
   const [firestoreUserData] = useDocumentData(
     user ? doc(db, 'users', user.uid) : null
   );
@@ -47,14 +56,6 @@ const Header = () => {
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
-    if (segment === 'quote') {
-      document.body.classList.remove('formula');
-    }
-
-    if (segment === 'formula') {
-      document.body.classList.add('formula')
-    }
-
     if (segment === 'quote' && pathName === '/kits') {
       redirect('/productos')
     }
@@ -80,21 +81,21 @@ const Header = () => {
   return (
     <>
       <Navbar isBordered>
-        <NavbarContent>
+        <NavbarContent className="gap-0">
           {userData && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
           </Button>}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
         {userData && <NavbarContent justify="center">
-          <h1 className="text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
+          <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
         {userData && <NavbarContent justify="end">
-          <Dropdown placement="bottom-end">
+          <Dropdown placement="bottom-end" children={[]}>
             <DropdownTrigger>
               <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Acciones de usuario" variant="flat">
+            <DropdownMenu aria-label="Acciones de usuario" variant="flat" children={null}>
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola!</p>
                 <p className="font-semibold">{userData.email}</p>
@@ -107,13 +108,21 @@ const Header = () => {
           </Dropdown>
         </NavbarContent>}
       </Navbar>
-      <Drawer isOpen={isOpen} size="xs" onClose={onClose} placement="left" backdrop="blur" hideCloseButton>
-        <DrawerContent>
+      <Drawer
+        isOpen={isOpen}
+        size="xs"
+        onClose={onClose}
+        placement="left"
+        backdrop="blur"
+        hideCloseButton
+        children={undefined}
+      >
+        <DrawerContent children={undefined}>
           {() => (
             <>
               <DrawerBody className="pt-16">
-                <Listbox>
-                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
+                <Listbox children={null}>
+                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración" children={null}>
                     <ListboxItem
                       key="quote"
                       className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -154,7 +163,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
+                  {userData?.role === 'admin' ? (<ListboxSection title="Administración" children={null}>
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"
