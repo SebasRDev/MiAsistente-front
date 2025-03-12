@@ -1,4 +1,3 @@
-/* eslint-disable react/no-children-prop */
 'use client'
 
 import { Autocomplete, AutocompleteItem, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react"
@@ -43,7 +42,7 @@ const Products = () => {
         selectedKey=""
         listboxProps={{
           emptyContent: "No se encontraron productos",
-        }} children={null}      >
+        }}>
         {filteredData?.map((product: Product) => (
           <AutocompleteItem
             key={product.code}
@@ -72,12 +71,12 @@ const Products = () => {
             <ProductQuoteCards key={product.instanceId} product={product} />
           ))
         }
-        <Drawer size="lg" backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} children={undefined} hideCloseButton>
-          <DrawerContent children={undefined}>
-            <DrawerHeader className="px-8" children={undefined}>
+        <Drawer size="lg" backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
+          <DrawerContent>
+            <DrawerHeader className="px-8">
               <h1 className="font-Trajan-pro-bold text-primary text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
             </DrawerHeader>
-            <DrawerBody children={undefined}>
+            <DrawerBody>
               <div className="flex flex-col gap-4 pb-10">
                 <p>Fase de tratamiento: <span className="font-bold">{bondades?.phase}</span></p>
                 <p>Horario de uso: <span className="font-bold">{bondades?.time}</span></p>

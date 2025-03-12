@@ -1,5 +1,3 @@
-/* eslint-disable react/no-children-prop */
-
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -44,7 +42,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         aria-label="Mi asistente SkinHealth"
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh formula`}
       >
-        <Providers children={undefined}>
+        <Providers>
           <Toaster richColors position="top-right" />
           <Header />
           <main className="text-foreground relative z-[1]">

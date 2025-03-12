@@ -91,11 +91,11 @@ const Header = () => {
           <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
         {userData && <NavbarContent justify="end">
-          <Dropdown placement="bottom-end" children={[]}>
+          <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar isBordered src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Acciones de usuario" variant="flat" children={null}>
+            <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola!</p>
                 <p className="font-semibold">{userData.email}</p>
@@ -115,14 +115,13 @@ const Header = () => {
         placement="left"
         backdrop="blur"
         hideCloseButton
-        children={undefined}
       >
-        <DrawerContent children={undefined}>
+        <DrawerContent>
           {() => (
             <>
               <DrawerBody className="pt-16">
-                <Listbox children={null}>
-                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración" children={null}>
+                <Listbox>
+                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
                     <ListboxItem
                       key="quote"
                       className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -163,7 +162,7 @@ const Header = () => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  {userData?.role === 'admin' ? (<ListboxSection title="Administración" children={null}>
+                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"
