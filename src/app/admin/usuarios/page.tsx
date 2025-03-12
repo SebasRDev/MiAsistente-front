@@ -59,8 +59,22 @@ export default function AdminUsers() {
       );
     }
 
-    return filteredUsers;
-  }, [value?.docs, hasSearchFilter, filterValue]);
+    return filteredUsers.sort((a: DocumentData, b: DocumentData) => {
+      const aData = a.data();
+      const bData = b.data();
+      const first = aData[sortDescriptor.column as string];
+      const second = bData[sortDescriptor.column as string];
+
+      // Manejar correctamente diferentes tipos de datos
+      if (typeof first === 'string' && typeof second === 'string') {
+        const cmp = first.localeCompare(second);
+        return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      } else {
+        const cmp = first < second ? -1 : first > second ? 1 : 0;
+        return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      }
+    });
+  }, [value?.docs, hasSearchFilter, filterValue, sortDescriptor.column, sortDescriptor.direction]);
 
   if (filteredItems.length) {
     pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -72,19 +86,6 @@ export default function AdminUsers() {
 
     return filteredItems.slice(start, end) || [];
   }, [filteredItems, page]);
-
-  const sortedItems = useMemo(() => {
-    return [...(items || [])].sort((a: DocumentData, b: DocumentData) => {
-      a = a.data();
-      b = b.data();
-      const first = a[sortDescriptor.column] as number;
-      const second = b[sortDescriptor.column] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items, filterValue]);
-
 
   const topContent = useMemo(() => {
     return <div className="flex w-full">
@@ -145,7 +146,7 @@ export default function AdminUsers() {
         <TableBody
           isLoading={loading}
           loadingContent={<Spinner label="Cargando usuarios" />}
-          items={sortedItems}
+          items={items}
         >
           {(doc: DocumentData) => (
             <TableRow key={doc.id}>
