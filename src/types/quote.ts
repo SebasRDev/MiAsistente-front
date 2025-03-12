@@ -2,6 +2,7 @@ import { DocumentData } from 'firebase/firestore';
 
 export interface Product {
   id: string;
+  instanceId?: string;
   code: string;
   name: string;
   publicPrice?: number | null;
@@ -44,9 +45,9 @@ export type QuoteAction =
   | { type: 'ADD_PRODUCT'; payload: Product }
   | {
       type: 'UPDATE_PRODUCT';
-      payload: { id: string; product: Partial<Product> };
+      payload: { id: string; instanceId?: string; product: Partial<Product> };
     }
-  | { type: 'REMOVE_PRODUCT'; payload: string }
+  | { type: 'REMOVE_PRODUCT'; instanceId?: string; payload: string }
   | { type: 'RESET_QUOTE' }
   | { type: 'LOAD_SAVED_STATE'; payload: QuoteState }
   | { type: 'SET_USER'; payload: DocumentData | undefined }

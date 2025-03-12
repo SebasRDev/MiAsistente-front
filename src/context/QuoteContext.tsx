@@ -85,19 +85,29 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
     case 'UPDATE_PRODUCT':
       newState = {
         ...state,
-        products: state.products.map((product) =>
-          product.id === action.payload.id
-            ? { ...product, ...action.payload.product }
-            : product
-        )
+        products: state.products.map((product) => {
+          if (action.payload.instanceId && product.instanceId === action.payload.instanceId) {
+            return { ...product, ...action.payload.product };
+          } else if (!action.payload.instanceId && product.id === action.payload.id) {
+            return { ...product, ...action.payload.product };
+          }
+          return product;
+        })
       };
       break;
 
     case 'REMOVE_PRODUCT':
-      newState = {
-        ...state,
-        products: state.products.filter(({ id }) => id !== action.payload)
-      };
+      if (action.instanceId) {
+        newState = {
+          ...state,
+          products: state.products.filter(product => product.instanceId !== action.instanceId)
+        };
+      } else {
+        newState = {
+          ...state,
+          products: state.products.filter(product => product.id !== action.payload)
+        };
+      }
       break;
 
     case 'RESET_QUOTE':

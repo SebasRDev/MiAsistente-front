@@ -25,7 +25,7 @@ export default function Datos() {
         },
         {
           label: "Descuento general:",
-          value: genDiscount.toFixed(2)
+          value: genDiscount.toFixed(2) + '%'
         }
       ]
       break;
@@ -45,11 +45,11 @@ export default function Datos() {
         },
         {
           label: "Ganancia:",
-          value: profit
+          value: currencyFormatter.format(profit)
         },
         {
           label: "Rentabilidad:",
-          value: profitability.toFixed(2)
+          value: profitability.toFixed(2) + '%'
         },
         {
           label: "Rendimiento Promedio:",
@@ -61,7 +61,7 @@ export default function Datos() {
         },
         {
           label: "Descuento general:",
-          value: genDiscount.toFixed(2)
+          value: genDiscount.toFixed(2) + '%'
         }
       ]
       break;
