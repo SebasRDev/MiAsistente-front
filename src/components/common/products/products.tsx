@@ -73,8 +73,8 @@ const Products = () => {
         }
         <Drawer size="lg" backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
           <DrawerContent>
-            <DrawerHeader className="px-8">
-              <h1 className="font-Trajan-pro-bold text-primary text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
+            <DrawerHeader className="px-8 bg-primary">
+              <h1 className="font-Trajan-pro-bold text- text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
             </DrawerHeader>
             <DrawerBody>
               <div className="flex flex-col gap-4 pb-10">

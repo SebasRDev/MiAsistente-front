@@ -16,6 +16,7 @@ export default {
         foreground: 'var(--foreground)',
         primary: '#658864',
         secondary: '#A4CF85',
+        cream: '#ebe5dc'
       },
       fontFamily: {
         'Trajan-pro': 'Trajan-pro',

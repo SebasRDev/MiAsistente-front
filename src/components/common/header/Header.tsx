@@ -47,9 +47,9 @@ const Header = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(firestoreUserData);
-      console.log(user);
-      dispatch({ type: 'SET_USER', payload: firestoreUserData });
+      if (!state.user) {
+        dispatch({ type: 'SET_USER', payload: firestoreUserData });
+      }
     } else {
       dispatch({ type: 'CLEAR_USER' });
     }
@@ -102,7 +102,7 @@ const Header = () => {
                 <p className="font-semibold">Hola! {state.user?.name}</p>
                 <p className="font-semibold">{userData.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings">Editar Perfil</DropdownItem>
+              <DropdownItem key="settings" onPress={() => router.push('/perfil')}>Editar Perfil</DropdownItem>
               <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
                 Cerrar Sesión
               </DropdownItem>
