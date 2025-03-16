@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Card, CardBody, CardFooter, CardHeader, Form, Input } from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Form, Input, Link, Modal, ModalContent, ModalHeader, useDisclosure } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { getApp } from "firebase/app";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
@@ -17,6 +17,9 @@ export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [isTerms, setIsTerms] = useState(false);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
   const router = useRouter();
 
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(firebaseAuth);
@@ -36,7 +39,12 @@ export default function Home() {
       if (isLogin) {
         result = await signInWithEmailAndPassword(email, password);
       } else {
-        result = await createUserWithEmailAndPassword(email, password);
+        if (isTerms) {
+          result = await createUserWithEmailAndPassword(email, password);
+        }
+        else {
+          toast.error('Debes aceptar los términos y condiciones para registrarte');
+        }
       }
 
       if (result && result.user) {
@@ -182,6 +190,14 @@ export default function Home() {
                 placeholder="Confirmar contraseña contraseña"
                 type={isVisible ? "text" : "password"}
               />}
+              {!isLogin && <div className="flex items-center gap-2">
+                <Checkbox isSelected={isTerms} onValueChange={setIsTerms} size="md" name="terms" required={!isLogin}>
+                  <p className="text-sm text-white">
+                    Acepto los
+                  </p>
+                </Checkbox>
+                <Link className="cursor-pointer" size="sm" underline="always" onPress={onOpen}>términos y condiciones</Link>
+              </div>}
               <Button
                 type="submit" variant="solid" color="primary" size="md" isLoading={isLoading}>
                 {isLogin ? "Ingresar" : "Registrate"}
@@ -200,6 +216,15 @@ export default function Home() {
           </CardFooter>
         </Card>
       </div>
+      <Modal isOpen={isOpen} placement="auto" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <ModalHeader>
+              Términos y condiciones
+            </ModalHeader>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   )
 }

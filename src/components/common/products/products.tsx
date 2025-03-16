@@ -10,6 +10,7 @@ import ProductFormulaCards from "@/components/common/cards/productFormulaCards"
 import ProductQuoteCards from "@/components/common/cards/productQuoteCards"
 import { useQuote } from "@/context/QuoteContext"
 import { Product } from "@/types/quote"
+import { motion } from 'framer-motion';
 
 const Products = () => {
   const { state, dispatch } = useQuote();
@@ -23,6 +24,7 @@ const Products = () => {
   }
 
   const handleSelect = (product: Product) => {
+    console.log(product);
     dispatch({
       type: 'ADD_PRODUCT', payload: {
         ...product,
@@ -74,17 +76,47 @@ const Products = () => {
         <Drawer size="lg" backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
           <DrawerContent>
             <DrawerHeader className="px-8 bg-primary">
-              <h1 className="font-Trajan-pro-bold text- text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
+              <h1 className="font-Trajan-pro-bold text-cream text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
             </DrawerHeader>
-            <DrawerBody>
+            <DrawerBody className="bg-cream">
+              <div className="flex justify-end relative">
+                {bondades?.image && 
+                  <motion.img
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                    src={bondades?.image} 
+                    alt={bondades?.name}
+                    className="w-full absolute -top-6 md:-top-10 -left-16 md:-left-20"
+                  />
+                }
+                <motion.div 
+                  className="flex flex-col gap-4 pb-10 pt-10 pl-10 w-[55%]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <p>Fase de tratamiento: <span className="font-bold">{bondades?.phase}</span></p>
+                  <p>Horario de uso: <span className="font-bold">{bondades?.time}</span></p>
+                  <p className="flex flex-col">Activos: <span className="font-bold">{bondades?.actives}</span></p>
+                </motion.div>
+              </div>
               <div className="flex flex-col gap-4 pb-10">
-                <p>Fase de tratamiento: <span className="font-bold">{bondades?.phase}</span></p>
-                <p>Horario de uso: <span className="font-bold">{bondades?.time}</span></p>
-                <p className="flex flex-col">Activos: <span className="font-bold">{bondades?.actives}</span></p>
                 <p className="font-bold">Caracteristicas:</p>
                 <ul>
                   {bondades?.properties.map((property: string, index: number) => (
-                    <li key={index} className="flex gap-2"><span className="font-bold">{index + 1}. </span>{property}</li>
+                    <motion.li 
+                      key={index}
+                      className="flex gap-2"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.3, delay: 0.2*index }}
+                    >
+                        <span className="font-bold">{index + 1}. </span>{property}
+                    </motion.li>
                   ))}
                 </ul>
               </div>

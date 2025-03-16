@@ -95,7 +95,7 @@ const Header = () => {
         {userData && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
-              <Avatar className="cursor-pointer" isBordered showFallback src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
+              <Avatar className="cursor-pointer" isBordered src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
             </DropdownTrigger>
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">

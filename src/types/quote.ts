@@ -12,6 +12,7 @@ export interface Product {
   properties: string[];
   phase: string;
   time: string;
+  image?: string | null;
   discount: number;
   quantity: number;
 }
