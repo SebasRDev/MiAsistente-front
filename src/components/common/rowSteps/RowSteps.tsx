@@ -3,14 +3,14 @@
 import type {ButtonProps} from "@heroui/react";
 import {Button, Card, CardBody, cn, Form, Input} from "@heroui/react";
 import {useControlledState} from "@react-stately/utils";
+import { getApp } from "firebase/app";
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import { m, LazyMotion, domAnimation, AnimatePresence, motion } from 'framer-motion';
 import type {ComponentProps} from "react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { useQuote } from "@/context/QuoteContext";
-import { doc, getDoc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
-import { getApp } from "firebase/app";
 
 export type RowStepProps = {
   title?: React.ReactNode;
@@ -80,7 +80,32 @@ function CheckIcon(props: ComponentProps<"svg">) {
   );
 }
 
-const fields = [
+// Define field names as a type for type safety
+type ProfileFieldName = 'name' | 'lastName' | 'graduate' | 'profession' | 'id' | 'phone' | 'nit' | 'centerName';
+
+// Define the profile data interface
+interface ProfileData {
+  name: string;
+  lastName: string;
+  graduate: string;
+  profession: string;
+  id: string;
+  phone: string;
+  nit: string;
+  centerName: string;
+}
+
+// Define the field structure with proper types
+interface FieldConfig {
+  label: string;
+  name: ProfileFieldName;
+  value: string;
+  required?: boolean;
+  type?: string;
+  step: number;
+}
+
+const fields: FieldConfig[] = [
   {
     label: "Nombre",
     name: "name",
@@ -161,7 +186,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       defaultStep,
       onStepChange,
     );
-    const [profileData, setProfileData] = useState<Record<string, string>>({
+    const [profileData, setProfileData] = useState<ProfileData>({
       name: '',
       lastName: '',
       graduate: '',
@@ -172,10 +197,11 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       centerName: '',
     });
     
-    const [errors, setErrors] = useState({});
-    const [touchedFields, setTouchedFields] = useState({});
+    // Define proper types for errors and touchedFields
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
     
-    // Usamos useEffect para actualizar los datos solo cuando state.user esté disponible
+    // Add null check for state.user
     useEffect(() => {
       if (state?.user) {
         setProfileData({
@@ -189,7 +215,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
           centerName: state.user.centerName || '',
         });
       }
-    }, [state.user]);
+    }, [state?.user]);
 
     const colors = React.useMemo(() => {
       let userColor;
@@ -244,11 +270,12 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       return colorsVars;
     }, [color, className]);
 
-    const handleValueChange = (e: any) => {
-      setProfileData((prevState) => ({...prevState, [e.target.name]: e.target.value}));
+    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setProfileData((prevState) => ({...prevState, [name as ProfileFieldName]: value}));
     }
 
-    const handleBlur = (fieldName:string) => {
+    const handleBlur = (fieldName: string) => {
       // Marca el campo como tocado
       setTouchedFields(prev => ({
         ...prev,
@@ -259,11 +286,11 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       validateField(fieldName);
     };
 
-    const validateField = (fieldName:string) => {
+    const validateField = (fieldName: string) => {
       const field = fields.find(f => f.name === fieldName);
       
       if (field?.required) {
-        const value = profileData[fieldName];
+        const value = profileData[field.name];
         const isInvalid = !value || value.trim() === '';
         
         setErrors(prev => ({
@@ -277,10 +304,10 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       return true;
     };
 
-    const validateFields = (step:number) => {
+    const validateFields = (step: number) => {
       const stepFields = fields.filter(field => field.step === step);
       let isValid = true;
-      const newErrors = {...errors};
+      const newErrors: Record<string, boolean> = {...errors};
       
       stepFields.forEach(field => {
         if (field.required) {
@@ -323,7 +350,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
         // Valida los campos del paso 2 antes de guardar
         const isStepValid = validateFields(2);
         
-        if (isStepValid) {
+        if (isStepValid && state?.user) {
           try {
             const updatedUserData = {
               ...state.user,
@@ -338,6 +365,8 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
             console.error('Error al guardar tu información:', error);
             toast.error('Ocurrió un error al guardar tú información');
           }
+        } else if (!state?.user) {
+          toast.error('Usuario no disponible');
         } else {
           const invalidFields = fields
             .filter(field => field.step === 2 && field.required && errors[field.name])
@@ -491,7 +520,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                     key={field.name}
                     label={field.label}
                     name={field.name}
-                    value={profileData[field.name as keyof typeof profileData]}
+                    value={profileData[field.name]}
                     onChange={handleValueChange}
                     type={field.type || 'text'}
                     required={field.required}
