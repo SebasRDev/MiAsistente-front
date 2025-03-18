@@ -24,6 +24,7 @@ export interface Product {
   properties: string[];
   phase: Phase;
   time: Time;
+  image: string;
 }
 
 export enum Phase {

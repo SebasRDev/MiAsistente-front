@@ -47,9 +47,9 @@ const Header = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(firestoreUserData);
-      console.log(user);
-      dispatch({ type: 'SET_USER', payload: firestoreUserData });
+      if (!state.user) {
+        dispatch({ type: 'SET_USER', payload: firestoreUserData });
+      }
     } else {
       dispatch({ type: 'CLEAR_USER' });
     }
@@ -95,14 +95,14 @@ const Header = () => {
         {userData && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
-              <Avatar className="cursor-pointer" isBordered showFallback src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
+              <Avatar className="cursor-pointer" isBordered src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
             </DropdownTrigger>
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Hola! {state.user?.name}</p>
                 <p className="font-semibold">{userData.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings">Editar Perfil</DropdownItem>
+              <DropdownItem key="settings" onPress={() => router.push('/perfil')}>Editar Perfil</DropdownItem>
               <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
                 Cerrar Sesión
               </DropdownItem>

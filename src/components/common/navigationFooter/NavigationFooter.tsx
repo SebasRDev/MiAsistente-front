@@ -1,7 +1,9 @@
 'use client'
-import { IconUserEdit, IconReceipt2, IconTagStarred, IconVaccineBottle, IconDownload } from "@tabler/icons-react"
+import { CircularProgress } from "@heroui/react";
+import { IconUserEdit, IconReceipt2, IconVaccineBottle, IconDownload } from "@tabler/icons-react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { KitsIcon } from "@/components/common/icons/icons";
@@ -10,6 +12,21 @@ import { useQuote } from "@/context/QuoteContext";
 const NavigationFooter = () => {
   const { state } = useQuote();
   const pathname = usePathname();
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [downloadValue, setDownloadValue] = useState(0);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (pdfLoading) {
+      interval = setInterval(() => {
+        setDownloadValue((v) => (v >= 100 ? 0 : v + 10));
+      }, 500);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [pdfLoading]);
 
   const requestBody = {
     "data": {
@@ -21,6 +38,8 @@ const NavigationFooter = () => {
   }
 
   const getPDF = async () => {
+    setPdfLoading(true);
+    setDownloadValue(0);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/quotes/${state.segment}`, {
         method: 'POST',
@@ -58,6 +77,9 @@ const NavigationFooter = () => {
       // You might want to add some user feedback here
       toast.error('No se pudo generar el PDF');
 
+    } finally {
+      setDownloadValue(100);
+      setPdfLoading(false);
     }
   }
 
@@ -91,12 +113,29 @@ const NavigationFooter = () => {
             <button data-tooltip-target="tooltip-new" type="button" className="inline-flex items-center justify-center w-10 h-10 font-medium bg-primary rounded-full hover:bg-primary group focus:ring-4 focus:ring-primary focus:outline-none"
               onClick={getPDF}
             >
-              <IconDownload
-                stroke={1.5}
-                color="#fff"
-                size={24}
-                className="group-hover:text-primary"
-              />
+              {
+                pdfLoading 
+                  ? <CircularProgress
+                  aria-label="Loading..."
+                  color="success"
+                  showValueLabel={true}
+                  size="md"
+                  value={downloadValue}
+                  formatOptions={{
+                    style: "decimal"
+                  }}
+                  strokeWidth={4}
+                  classNames={{
+                    value: "text-xs font-bold text-white font-Swiss-bold",
+                  }}
+                />
+                  : <IconDownload
+                  stroke={1.5}
+                  color="#fff"
+                  size={24}
+                  className="group-hover:text-primary"
+                /> 
+              }
             </button>
           </div>
           <Link
