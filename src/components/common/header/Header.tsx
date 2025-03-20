@@ -22,7 +22,7 @@ import { firebaseAuth } from "@/utils/firebase/config";
 const db = getFirestore(getApp());
 
 
-const Header = () => {
+const Header = ({ session }: { session: string | null }) => {
   // Usar useDocumentData para obtener los datos del usuario desde Firestore
   const router = useRouter();
   const [signOut] = useSignOut(firebaseAuth);
@@ -46,21 +46,20 @@ const Header = () => {
   const userData = state.user;
 
   useEffect(() => {
-    if (user) {
+    if (!user || !session) {
+      dispatch({ type: 'CLEAR_USER' });
+    }
+
+    if (user && session) {
       if (!state.user) {
         dispatch({ type: 'SET_USER', payload: firestoreUserData });
       }
-    } else {
-      dispatch({ type: 'CLEAR_USER' });
     }
-  }, [user, dispatch, firestoreUserData]);
+  }, [user, dispatch, firestoreUserData, session]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
-    if (segment === 'quote' && pathName === '/kits') {
-      redirect('/productos')
-    }
   };
 
   const handleReset = async () => {

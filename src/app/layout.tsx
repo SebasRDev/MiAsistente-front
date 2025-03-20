@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SKH APP",
+  title: "Mi Asistente SkinHealth",
   description: "Cotizador| Formulador Skinhealth Colombia",
 };
 
@@ -34,8 +34,10 @@ export const viewport: Viewport = {
   // interactiveWidget: 'resizes-visual',
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  const session = cookies().then((cookies) => cookies.get('user-session') || null);
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const cookieStore = cookies();
+  const sessionCookie = (await cookieStore).get('user-session');
+  const session = sessionCookie?.value || null;
   return (
     <html lang="en">
       <body
@@ -44,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <Providers>
           <Toaster richColors position="top-right" />
-          <Header />
+          <Header session={session} />
           <main className="text-foreground relative z-[1]">
             {children}
           </main>

@@ -1,4 +1,5 @@
 export interface Kit {
+  category: string;
   id: string;
   name: string;
   price: number;

@@ -58,12 +58,11 @@ body.formula::after {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100%;
   background-image: url('/assets/ai_leaves.webp');
   background-size: cover;
-  background-repeat: no-repeat;
   background-position: center;
-  background-attachment: fixed;
+  background-attachment: scroll;
   z-index: 0;
 }
 

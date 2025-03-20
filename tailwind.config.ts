@@ -1,6 +1,6 @@
+import { heroui } from '@heroui/react';
 import type { Config } from 'tailwindcss';
 
-import { heroui } from '@heroui/react';
 
 export default {
   content: [
@@ -16,7 +16,7 @@ export default {
         foreground: 'var(--foreground)',
         primary: '#658864',
         secondary: '#A4CF85',
-        cream: '#ebe5dc'
+        cream: '#f7ede4'
       },
       fontFamily: {
         'Trajan-pro': 'Trajan-pro',

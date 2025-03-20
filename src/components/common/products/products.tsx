@@ -73,26 +73,29 @@ const Products = () => {
             <ProductQuoteCards key={product.instanceId} product={product} />
           ))
         }
-        <Drawer size="lg" backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
+        <Drawer size={(size?.width || 0) > 768 ? 'lg' : 'xl'} backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
           <DrawerContent>
-            <DrawerHeader className="px-8 bg-primary">
-              <h1 className="font-Trajan-pro-bold text-cream text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
+            <DrawerHeader
+              className="px-8 bg-primary justify-center"
+            >
+              <h1 className="font-Trajan-pro-bold drop-shadow-[0_0_4px_#f7ede4] text-cream text-center text-2xl px-4 text-balance">{bondades?.name}</h1>
             </DrawerHeader>
             <DrawerBody className="bg-cream">
               <div className="flex justify-end relative">
-                {bondades?.image && 
-                  <motion.img
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    src={bondades?.image} 
-                    alt={bondades?.name}
-                    className="w-full absolute -top-6 md:-top-10 -left-16 md:-left-20"
-                  />
+                {bondades?.image &&
+                  <div className="w-[65%] flex-shrink-0 block">
+                    <motion.img
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, delay: 0.3 }}
+                      src={bondades?.image}
+                      alt={bondades?.name}
+                    />
+                  </div>
                 }
-                <motion.div 
-                  className="flex flex-col gap-4 pb-10 pt-10 pl-10 w-[55%]"
+                <motion.div
+                  className="flex flex-col gap-4 pb-10 pt-10 flex-shrink-0 max-w-[35%]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
@@ -107,15 +110,15 @@ const Products = () => {
                 <p className="font-bold">Caracteristicas:</p>
                 <ul>
                   {bondades?.properties.map((property: string, index: number) => (
-                    <motion.li 
+                    <motion.li
                       key={index}
                       className="flex gap-2"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.3, delay: 0.2*index }}
+                      transition={{ duration: 0.3, delay: 0.2 * index }}
                     >
-                        <span className="font-bold">{index + 1}. </span>{property}
+                      <span className="font-bold">{index + 1}. </span>{property}
                     </motion.li>
                   ))}
                 </ul>

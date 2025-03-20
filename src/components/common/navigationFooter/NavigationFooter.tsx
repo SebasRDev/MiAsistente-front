@@ -114,27 +114,27 @@ const NavigationFooter = () => {
               onClick={getPDF}
             >
               {
-                pdfLoading 
+                pdfLoading
                   ? <CircularProgress
-                  aria-label="Loading..."
-                  color="success"
-                  showValueLabel={true}
-                  size="md"
-                  value={downloadValue}
-                  formatOptions={{
-                    style: "decimal"
-                  }}
-                  strokeWidth={4}
-                  classNames={{
-                    value: "text-xs font-bold text-white font-Swiss-bold",
-                  }}
-                />
+                    aria-label="Loading..."
+                    color="success"
+                    showValueLabel={true}
+                    size="md"
+                    value={downloadValue}
+                    formatOptions={{
+                      style: "decimal"
+                    }}
+                    strokeWidth={4}
+                    classNames={{
+                      value: "text-xs font-bold text-white font-Swiss-bold",
+                    }}
+                  />
                   : <IconDownload
-                  stroke={1.5}
-                  color="#fff"
-                  size={24}
-                  className="group-hover:text-primary"
-                /> 
+                    stroke={1.5}
+                    color="#fff"
+                    size={24}
+                    className="group-hover:text-primary"
+                  />
               }
             </button>
           </div>
@@ -151,19 +151,11 @@ const NavigationFooter = () => {
           </Link>
           <Link
             href="/kits"
-            className={`flex items-center justify-center group hover:bg-gray-50 ${state.segment === 'quote' ? 'pointer-events-none bg-gray-300' : ''}`}
-            aria-disabled={state.segment === 'quote'}
-            tabIndex={state.segment === 'quote' ? -1 : undefined}
+            className="flex items-center justify-center group hover:bg-gray-50"
           >
             <KitsIcon
               color={pathname == '/kits' ? "#658864" : "#6b7280"}
             />
-            {/* <IconTagStarred
-              stroke={1.5}
-              color={pathname == '/kits' ? "#658864" : "#6b7280"}
-              size={35}
-              className="group-hover:text-primary"
-            /> */}
           </Link>
         </div>
       </div>}
