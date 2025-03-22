@@ -58,16 +58,18 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
       <div>
         <h4 className="text-lg font-bold">Valor</h4>
         <div className="flex gap-2 items-center">
-          <NumberFlow
-            value={getProductPrice(product.publicPrice ?? 0, productState.quantity)}
-            format={{
-              style: 'currency',
-              currency: 'COP',
-              currencyDisplay: 'narrowSymbol',
-              trailingZeroDisplay: 'stripIfInteger'
-            }}
-            className="text-success-700"
-          />
+          <div className={(product.discount > 0 || state.quote.generalDiscount > 0) ? 'relative after:content-[\'+\'] after:absolute after:right-0 after:h-0.5 after:w-full after:bg-primary after:rounded-full after:transition-all after:duration-300 after:top-[40%] after:translate-y-1/2' : ''}>
+            <NumberFlow
+              value={getProductPrice(product.publicPrice ?? 0, productState.quantity)}
+              format={{
+                style: 'currency',
+                currency: 'COP',
+                currencyDisplay: 'narrowSymbol',
+                trailingZeroDisplay: 'stripIfInteger'
+              }}
+              className="text-success-700"
+            />
+          </div>
           {(productState.discount > 0 || state.quote.generalDiscount > 0) && (
             <NumberFlow
               value={

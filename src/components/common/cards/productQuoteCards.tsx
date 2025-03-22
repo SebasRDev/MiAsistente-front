@@ -52,27 +52,43 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
     </CardHeader>
     <CardBody className="flex-row gap-10">
       <div>
-        <h4 className="text-lg font-bold">{product.publicPrice === null && 'Rendimiento'}</h4>
-        <div className="flex gap-2 items-center">
-          <NumberFlow
-            value={getProductEfficiency(product.efficiency ?? 0, productState.quantity)}
-            className="text-success-700"
-          />
-        </div>
+        {
+          product.publicPrice === null ? (
+            <>
+              <h4 className="text-lg font-bold">Rendimiento</h4>
+              <div className="flex gap-2 items-center">
+                <NumberFlow
+                  value={getProductEfficiency(product.efficiency ?? 0, productState.quantity)}
+                  className="text-success-700"
+                />
+              </div>
+            </>
+          )
+            : (
+              <>
+                <h4 className="text-lg font-bold">Uso</h4>
+                <div className="flex gap-2 items-center">
+                  <p>{product.time}</p>
+                </div>
+              </>
+            )
+        }
       </div>
       <div>
         <h4 className="text-lg font-bold">Profesional</h4>
         <div className="flex gap-2 items-center">
-          <NumberFlow
-            value={getProductPrice(product.profesionalPrice, productState.quantity)}
-            format={{
-              style: 'currency',
-              currency: 'COP',
-              currencyDisplay: 'narrowSymbol',
-              trailingZeroDisplay: 'stripIfInteger'
-            }}
-            className="text-success-700"
-          />
+          <div className={(product.discount > 0 || state.quote.generalDiscount > 0) ? 'relative after:content-[\'+\'] after:absolute after:right-0 after:h-0.5 after:w-full after:bg-primary after:rounded-full after:transition-all after:duration-300 after:top-[40%] after:translate-y-1/2' : ''}>
+            <NumberFlow
+              value={getProductPrice(product.profesionalPrice, productState.quantity)}
+              format={{
+                style: 'currency',
+                currency: 'COP',
+                currencyDisplay: 'narrowSymbol',
+                trailingZeroDisplay: 'stripIfInteger'
+              }}
+              className="text-success-700"
+            />
+          </div>
           {(productState.discount > 0 || state.quote.generalDiscount > 0) && (
             <NumberFlow
               value={

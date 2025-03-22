@@ -7,10 +7,16 @@ export const getProductPrice = (
   generalDiscount: number = 0
 ): number => {
   if (!price || !quantity) return 0;
-  return price * quantity - price * quantity * (discount / 100) - price * quantity * (generalDiscount / 100);
+  const base = price * quantity;
+  const baseOffPrice = base * (discount / 100);
+  const totalOffPrice = (base - baseOffPrice) * (generalDiscount / 100);
+  return base - baseOffPrice - totalOffPrice;
 };
 
-export const getProductEfficiency = (effieciency: number, quantity: number): number => {
+export const getProductEfficiency = (
+  effieciency: number,
+  quantity: number
+): number => {
   if (!effieciency || !quantity) return 0;
   return effieciency * quantity;
 };
@@ -46,7 +52,15 @@ export const calculateSummaryTotals = (
   const totalToPay = products.reduce((acc, curr) => {
     const price = curr[priceProperty];
     if (price === null || price === undefined) return acc;
-    return acc + getProductPrice(price, curr.quantity ?? 0, curr.discount ?? 0, generalDiscount);
+    return (
+      acc +
+      getProductPrice(
+        price,
+        curr.quantity ?? 0,
+        curr.discount ?? 0,
+        generalDiscount
+      )
+    );
   }, 0);
 
   const totalNoDiscount = products.reduce((acc, curr) => {

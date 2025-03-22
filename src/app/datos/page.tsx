@@ -1,49 +1,61 @@
 'use client'
-import { Input, Tabs, Tab } from "@heroui/react";
+import { Input, Tabs, Tab, Textarea } from "@heroui/react";
 import { IconPercentage } from '@tabler/icons-react';
 
 import { useQuote } from "@/context/QuoteContext";
 
-type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional';
+type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional' | 'recommendations';
 
 interface Field {
   label: string;
   name: FieldName;
   type: string;
+  segment: 'all' | 'formula' | 'quote';
 }
 
 const fields: Field[] = [
   {
     label: "Nombre del paciente",
     name: 'client',
-    type: 'text'
+    type: 'text',
+    segment: 'all'
   },
   {
     label: "Télefono paciente",
     name: 'phone',
-    type: 'tel'
+    type: 'tel',
+    segment: 'all'
   },
   {
     label: "Nit/CC paciente",
     name: 'id',
-    type: 'tel'
+    type: 'tel',
+    segment: 'all'
   },
   {
     label: "Fidelizador para el paciente",
     name: 'gift',
-    type: 'text'
+    type: 'text',
+    segment: 'quote'
   },
   {
     label: "Profesional de la estética",
     name: 'profesional',
-    type: 'text'
+    type: 'text',
+    segment: 'all'
   },
+  {
+    label: 'Recomendaciones',
+    name: 'recommendations',
+    type: 'textarea',
+    segment: 'formula'
+  }
 ]
 
 export default function Datos() {
   const { state, dispatch } = useQuote();
 
-  const handleChange = (value: string, field: 'client' | 'phone' | 'id' | 'gift' | 'profesional') => {
+  const handleChange = (value: string, field: 'client' | 'phone' | 'id' | 'gift' | 'profesional' | 'recommendations') => {
     dispatch({
       type: 'SET_CLIENT_INFO',
       payload: { field, value }
@@ -67,13 +79,26 @@ export default function Datos() {
         <Tab key="datos" title="Datos del cliente">
           <h1 className="font-Trajan-pro-bold text-primary text-center text-2xl">Datos del {state.segment === 'formula' ? 'paciente' : 'cliente'}</h1>
           <div className="flex flex-col gap-4">
-            {fields.map(({ label, type, name }) => <Input
-              key={label} type={type}
-              label={label}
-              name={name}
-              value={state.quote[name] ?? ''}
-              onChange={(e) => handleChange(e.target.value, name)}
-            />)}
+            {fields.map(({ label, type, name, segment }) => (
+              <div key={name} className={segment === 'all' || segment === state.segment ? 'block' : 'hidden'}>
+                {type !== 'textarea' ? (
+                  <Input
+                    type={type}
+                    label={label}
+                    name={name}
+                    value={state.quote[name] ?? ''}
+                    onChange={(e) => handleChange(e.target.value, name)}
+                  />
+                ) : (
+                  <Textarea
+                    label={label}
+                    name={name}
+                    value={state.quote[name] ?? ''}
+                    onChange={(e) => handleChange(e.target.value, name)}
+                  />
+                )}
+              </div>
+            ))}
           </div>
         </Tab>
         <Tab key="descuento-general" title="Descuento General">

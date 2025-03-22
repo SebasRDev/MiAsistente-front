@@ -41,6 +41,20 @@ const Kits = () => {
 
   const kits = [...data];
 
+  // Función para filtrar kits según el segmento
+  const shouldShowKit = (kit: Kit) => {
+    if (state.segment === 'formula') {
+      // En 'formula', mostrar solo kits de 'CASA'
+      return kit.category === 'CASA';
+    } else if (state.segment === 'quote') {
+      // En 'quote', mostrar todos los kits
+      return true;
+    } else {
+      // Para cualquier otro segmento, mostrar solo los kits de la categoría seleccionada
+      return kit.category === kitsCategory;
+    }
+  };
+
   const handleAddKit = (kit: Kit) => {
     try {
       dispatch({ type: 'SET_KIT', payload: kit.id })
@@ -65,7 +79,7 @@ const Kits = () => {
   return (
     <div className="flex flex-col gap-4">
       {kits?.map((kit: Kit) => (
-        kit.category === kitsCategory && (
+        shouldShowKit(kit) && (
           <Card
             key={kit.id}
             style={{ "--tw-backdrop-blur": "blur(4px)" } as React.CSSProperties}
@@ -108,7 +122,7 @@ const Kits = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.3, delay: 0.1 + (index * 0.05) }}
                         >
-                          {kitsCategory === 'CABINA' && <p className="text-md font-bold text-primary">{quantity}</p>}
+                          {kit.category === 'CABINA' && <p className="text-md font-bold text-primary">{quantity}</p>}
                           <p className="flex-grow">{product.name}</p>
                           <motion.div
                             className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center flex-shrink-0"
@@ -117,9 +131,8 @@ const Kits = () => {
                             transition={{ duration: 0.3, delay: 0.2 + (index * 0.05) }}
                           >
                             {
-                              kitsCategory === 'CASA'
-                                ? <Usage time={product.time} />
-                                : <p>{product.efficiency}</p>
+                              kit.category === 'CASA'
+                              && <Usage time={product.time} />
                             }
                           </motion.div>
                         </motion.div>

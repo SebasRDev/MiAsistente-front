@@ -26,6 +26,7 @@ export interface QuoteState {
     gift: string;
     profesional: string;
     generalDiscount: number;
+    recommendations?: string;
   };
   kit: string;
   products: Product[];
@@ -37,7 +38,13 @@ export type QuoteAction =
   | {
       type: 'SET_CLIENT_INFO';
       payload: {
-        field: 'client' | 'phone' | 'id' | 'gift' | 'profesional';
+        field:
+          | 'client'
+          | 'phone'
+          | 'id'
+          | 'gift'
+          | 'profesional'
+          | 'recommendations';
         value: string;
       };
     }
