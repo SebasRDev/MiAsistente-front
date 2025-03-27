@@ -15,25 +15,25 @@ interface Field {
 
 const fields: Field[] = [
   {
-    label: "Nombre del paciente",
+    label: "Nombre del ",
     name: 'client',
     type: 'text',
     segment: 'all'
   },
   {
-    label: "Télefono paciente",
+    label: "Télefono ",
     name: 'phone',
     type: 'tel',
     segment: 'all'
   },
   {
-    label: "Nit/CC paciente",
+    label: "Nit/CC ",
     name: 'id',
     type: 'tel',
     segment: 'all'
   },
   {
-    label: "Fidelizador para el paciente",
+    label: "Cortesía para el",
     name: 'gift',
     type: 'text',
     segment: 'quote'
@@ -73,6 +73,11 @@ export default function Datos() {
     dispatch({ type: 'SET_GENERAL_DISCOUNT', payload: Number(value) })
   }
 
+  const setLabel = (name: string, label: string) => {
+    if (name === 'profesional') return label
+    return state.segment === 'formula' ? `${label} paciente` : `${label} cliente`
+  }
+
   return (
     <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
       <Tabs aria-label="Opciones" radius="full" className="w-full justify-center">
@@ -84,7 +89,7 @@ export default function Datos() {
                 {type !== 'textarea' ? (
                   <Input
                     type={type}
-                    label={label}
+                    label={setLabel(name, label)}
                     name={name}
                     value={state.quote[name] ?? ''}
                     onChange={(e) => handleChange(e.target.value, name)}

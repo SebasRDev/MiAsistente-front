@@ -1,5 +1,6 @@
 export interface Kit {
   category: string;
+  weight: number;
   id: string;
   name: string;
   price: number;

@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { Kit } from '@/app/kits/kit.interface';
 
 export const kitsOptions = queryOptions({
   queryKey: ['kits'],
@@ -7,6 +8,7 @@ export const kitsOptions = queryOptions({
       `${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/kits`
     );
     const data = await response.json();
-    return data;
+    const orderedData = data.sort((a: Kit, b: Kit) => a.weight - b.weight);
+    return orderedData;
   },
 });

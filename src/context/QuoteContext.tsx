@@ -44,6 +44,15 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
       newState = {
         ...state,
         products: [],
+        kit: '',
+        quote: {
+          client: '',
+          phone: '',
+          id: '',
+          gift: '',
+          profesional: '',
+          generalDiscount: 0,
+        },
         segment: action.payload
       };
       break;
