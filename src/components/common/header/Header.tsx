@@ -42,6 +42,7 @@ const Header = ({ session }: { session: string | null }) => {
     user ? doc(db, 'users', user.uid) : null
   );
   const pathName = usePathname();
+  const isWaitingRoom = pathName.includes('waiting-room');
 
   const userData = state.user;
 
@@ -81,17 +82,17 @@ const Header = ({ session }: { session: string | null }) => {
 
   return (
     <>
-      <Navbar isBordered>
+      <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "-webkit-backdrop-filter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
         <NavbarContent className="gap-0">
-          {userData && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+          {userData && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
           </Button>}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {userData && <NavbarContent justify="center">
+        {userData && !isWaitingRoom && <NavbarContent justify="center">
           <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
-        {userData && <NavbarContent justify="end">
+        {userData && !isWaitingRoom && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar className="cursor-pointer" isBordered src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />

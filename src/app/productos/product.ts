@@ -7,7 +7,8 @@ export const productOptions = queryOptions({
       `${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/products`
     );
     const data = await response.json();
-    console.log(data);
     return data;
   },
+  staleTime: 24 * 60 * 60 * 1000,
+  gcTime: 24 * 60 * 60 * 1000,
 });

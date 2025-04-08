@@ -128,7 +128,7 @@ export default function Home() {
   return (
     <div className="login-page">
       <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
-        <Card isBlurred className="max-w-96 w-full shrink-0">
+        <Card isBlurred className="max-w-96 w-full shrink-0" style={{ "-webkit-backdrop-filter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
           <CardHeader>
             <p className="text-white text-center text-2xl">Mi Asistente SkinHealth</p>
           </CardHeader>

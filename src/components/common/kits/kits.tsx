@@ -82,14 +82,14 @@ const Kits = () => {
         shouldShowKit(kit) && (
           <Card
             key={kit.id}
-            style={{ "--tw-backdrop-blur": "blur(4px)" } as React.CSSProperties}
+            style={{ "--tw-backdrop-blur": "blur(4px)", "-webkit-backdrop-filter": "blur(4px) saturate(1.5)" } as React.CSSProperties}
             className="w-full overflow-hidden"
             isBlurred
             onPress={() => setShowKits(prevState => prevState === kit.id ? null : kit.id)}
             isPressable
           >
             <CardHeader className="flex flex-col items-center gap-2 relative">
-              <h2 className="font-bold text-primary font-Trajan-pro text-lg text-balance px-6">{kit.name}</h2>
+              <h2 className="font-bold text-primary-dark font-Trajan-pro text-lg text-balance px-6">{kit.name}</h2>
               <div className="absolute top-4 right-4">
                 {showKits === kit.id ? <IconX stroke={1.5} size={24} /> : <IconPlus stroke={1.5} size={24} />}
               </div>
@@ -103,8 +103,9 @@ const Kits = () => {
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="flex justify-center w-full"
                   >
-                    <CardBody className="flex flex-col gap-2">
+                    <CardBody className="flex flex-col gap-2 max-w-md">
                       <motion.p
                         className="text-xl font-bold text-center"
                         initial={{ opacity: 0, y: -10 }}
@@ -145,12 +146,14 @@ const Kits = () => {
                     animate={{ opacity: 1, y: 0, height: "auto" }}
                     exit={{ opacity: 0, y: 20, height: 0 }}
                     transition={{ duration: 0.3, delay: 0.3 }}
+                    className="w-full"
                   >
                     <CardFooter className="flex justify-center">
                       <Button
                         color="primary"
                         size="md"
                         onPress={() => handleAddKit(kit)}
+                        className="inline-block mx-auto"
                       >
                         Añadir
                       </Button>

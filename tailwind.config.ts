@@ -15,6 +15,7 @@ export default {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         primary: '#658864',
+        'primary-dark': '#576956',
         secondary: '#A4CF85',
         cream: '#f7ede4'
       },

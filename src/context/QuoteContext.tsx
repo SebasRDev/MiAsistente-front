@@ -42,17 +42,8 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
   switch (action.type) {
     case 'SET_SEGMENT':
       newState = {
-        ...state,
-        products: [],
-        kit: '',
-        quote: {
-          client: '',
-          phone: '',
-          id: '',
-          gift: '',
-          profesional: '',
-          generalDiscount: 0,
-        },
+        ...defaultState,
+        user: state.user,
         segment: action.payload
       };
       break;

@@ -3,6 +3,7 @@
 import { Autocomplete, AutocompleteItem, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
+import { motion } from 'framer-motion';
 import { useState } from "react"
 
 import { productOptions } from "@/app/productos/product"
@@ -10,7 +11,7 @@ import ProductFormulaCards from "@/components/common/cards/productFormulaCards"
 import ProductQuoteCards from "@/components/common/cards/productQuoteCards"
 import { useQuote } from "@/context/QuoteContext"
 import { Product } from "@/types/quote"
-import { motion } from 'framer-motion';
+
 
 const Products = () => {
   const { state, dispatch } = useQuote();
@@ -24,7 +25,6 @@ const Products = () => {
   }
 
   const handleSelect = (product: Product) => {
-    console.log(product);
     dispatch({
       type: 'ADD_PRODUCT', payload: {
         ...product,
