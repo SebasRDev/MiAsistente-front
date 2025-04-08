@@ -1,5 +1,6 @@
 interface Product {
   id: string;
+  weight: number;
   code: string;
   name: string;
   publicPrice?: number | null;

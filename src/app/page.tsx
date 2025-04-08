@@ -18,7 +18,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [isTerms, setIsTerms] = useState(false);
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const router = useRouter();
 
@@ -70,15 +70,15 @@ export default function Home() {
         if (result.user.photoURL) {
           const db = getFirestore(getApp());
           const userDocRef = doc(db, 'users', result.user.uid);
-  
+
           const userDoc = await getDoc(userDocRef);
-          
+
           // Procesar displayName para obtener nombre y apellido
           const displayName = result.user.displayName || '';
           const nameParts = displayName.split(' ');
           const firstName = nameParts[0] || '';
           const lastName = nameParts.slice(1).join(' ') || '';
-          
+
           if (!userDoc.exists()) {
             // Si el usuario no existe, crear un documento nuevo
             await setDoc(userDocRef, {
@@ -92,29 +92,29 @@ export default function Home() {
             // Si el usuario existe, verificar qué campos necesitan actualizarse
             const userData = userDoc.data();
             const updates: any = {};
-            
+
             // Verificar si el avatar ha cambiado
             if (!userData.avatar || userData.avatar !== result.user.photoURL) {
               updates.avatar = result.user.photoURL;
             }
-            
+
             // Verificar si el nombre ha cambiado
             if (!userData.name || userData.name !== firstName) {
               updates.name = firstName;
             }
-            
+
             // Verificar si el apellido ha cambiado
             if (!userData.lastName || userData.lastName !== lastName) {
               updates.lastName = lastName;
             }
-            
+
             // Solo actualizar si hay cambios
             if (Object.keys(updates).length > 0) {
               await setDoc(userDocRef, updates, { merge: true });
             }
           }
         }
-  
+
         await createSession(result.user.uid);
         router.push('/productos');
       }
