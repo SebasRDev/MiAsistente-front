@@ -74,7 +74,8 @@ export default function Datos() {
   }
 
   const setLabel = (name: string, label: string) => {
-    if (name === 'profesional') return label
+    if (name === 'profesional' && state.segment === 'formula') return label
+    if (name === 'profesional' && state.segment === 'quote') return 'Asesor SkinHealth'
     return state.segment === 'formula' ? `${label} paciente` : `${label} cliente`
   }
 

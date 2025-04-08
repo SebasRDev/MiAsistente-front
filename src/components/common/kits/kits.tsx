@@ -88,8 +88,8 @@ const Kits = () => {
             onPress={() => setShowKits(prevState => prevState === kit.id ? null : kit.id)}
             isPressable
           >
-            <CardHeader className="flex flex-col items-center gap-2 relative">
-              <h2 className="font-bold text-primary-dark font-Trajan-pro text-lg text-balance px-6">{kit.name}</h2>
+            <CardHeader className={`flex flex-col items-center gap-2 relative ${kit.category === 'CABINA' ? 'bg-[#eff9ef]' : 'text-primary-dark'}`}>
+              <h2 className="font-bold font-Trajan-pro text-lg text-balance px-6">{kit.name}</h2>
               <div className="absolute top-4 right-4">
                 {showKits === kit.id ? <IconX stroke={1.5} size={24} /> : <IconPlus stroke={1.5} size={24} />}
               </div>
