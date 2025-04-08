@@ -66,9 +66,17 @@ export default function ProductQuoteCards({ product }: ProductQuoteCardProps) {
           )
             : (
               <>
-                <h4 className="text-lg font-bold">Uso</h4>
+                <h4 className="text-lg font-bold">Público</h4>
                 <div className="flex gap-2 items-center">
-                  <p>{product.time}</p>
+                  <NumberFlow
+                    value={getProductPrice(product.publicPrice ?? 0, productState.quantity)}
+                    format={{
+                      style: 'currency',
+                      currency: 'COP',
+                      currencyDisplay: 'narrowSymbol',
+                      trailingZeroDisplay: 'stripIfInteger'
+                    }}
+                  />
                 </div>
               </>
             )
