@@ -4,6 +4,7 @@ export interface Kit {
   id: string;
   name: string;
   price: number;
+  profesionalPrice: number;
   tips: string[];
   protocol: Protocol;
   kitProducts: KitProduct[];

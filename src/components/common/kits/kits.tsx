@@ -112,7 +112,7 @@ const Kits = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.1 }}
                       >
-                        {currencyFormatter.format(kit.price)}
+                        {state.segment === 'formula' ? currencyFormatter.format(kit.price) : currencyFormatter.format(kit.profesionalPrice)}
                       </motion.p>
 
                       {kit.kitProducts.map(({ product, quantity }, index) => (
