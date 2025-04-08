@@ -87,7 +87,7 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
         </div>
       </div>
     </CardBody>
-    <CardFooter className="flex items-center gap-4">
+    <CardFooter className="flex items-center gap-4 flex-wrap">
       <Input
         label="Desc"
         labelPlacement="inside"
@@ -100,7 +100,7 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
         value={productState.discount.toString()}
         onChange={(e) => handleDiscount(Number(e.target.value))}
         variant="flat"
-        className="w-[25%]"
+        className="w-[25%] min-w-20"
       />
       <div className="flex gap-2 items-center">
         <Button
