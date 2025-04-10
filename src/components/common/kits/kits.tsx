@@ -82,7 +82,7 @@ const Kits = () => {
         shouldShowKit(kit) && (
           <Card
             key={kit.id}
-            style={{ "--tw-backdrop-blur": "blur(4px)", "-webkit-backdrop-filter": "blur(4px) saturate(1.5)" } as React.CSSProperties}
+            style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(4px) saturate(1.5)" } as React.CSSProperties}
             className="w-full overflow-hidden"
             isBlurred
             onPress={() => setShowKits(prevState => prevState === kit.id ? null : kit.id)}

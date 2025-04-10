@@ -49,6 +49,31 @@ export default function Home() {
 
       if (result && result.user) {
         await createSession(result.user.uid);
+        const db = getFirestore(getApp());
+        const userDocRef = doc(db, 'users', result.user.uid);
+
+        const userDoc = await getDoc(userDocRef);
+
+        // Procesar displayName para obtener nombre y apellido
+        const displayName = result.user.displayName || '';
+        const nameParts = displayName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        if (!userDoc.exists()) {
+          // Si el usuario no existe, crear un documento nuevo
+          await setDoc(userDocRef, {
+            uid: result.user.uid,
+            email: result.user.email,
+            name: firstName,
+            lastName: lastName,
+            avatar: result.user.photoURL,
+            createdAt: new Date(),
+            approved: false,
+            isProfileComplete: false
+          });
+          router.push('/waiting-room');
+        } 
         router.push('/productos');
       }
 
@@ -66,10 +91,11 @@ export default function Home() {
   const handleSignInGoogle = async () => {
     try {
       const result = await signInWithGoogle();
+      const db = getFirestore(getApp());
+      let userDocRef;
       if (result && result.user) {
+        userDocRef = doc(db, 'users', result.user.uid);
         if (result.user.photoURL) {
-          const db = getFirestore(getApp());
-          const userDocRef = doc(db, 'users', result.user.uid);
 
           const userDoc = await getDoc(userDocRef);
 
@@ -82,11 +108,14 @@ export default function Home() {
           if (!userDoc.exists()) {
             // Si el usuario no existe, crear un documento nuevo
             await setDoc(userDocRef, {
+              uid: result.user.uid,
               email: result.user.email,
               name: firstName,
               lastName: lastName,
               avatar: result.user.photoURL,
-              createdAt: new Date()
+              createdAt: new Date(),
+              approved: false,
+              isProfileComplete: false
             });
           } else {
             // Si el usuario existe, verificar qué campos necesitan actualizarse
@@ -116,7 +145,18 @@ export default function Home() {
         }
 
         await createSession(result.user.uid);
-        router.push('/productos');
+        if (userDocRef){
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.data()?.approved === false) {
+            router.push('/waiting-room');
+          }
+          else if (userDoc.data()?.isProfileComplete === false) {
+            router.push('/perfil');
+          }
+          else {
+            router.push('/productos');
+          }
+        }
       }
     } catch (error) {
       console.error("Error real:", error);
@@ -128,7 +168,7 @@ export default function Home() {
   return (
     <div className="login-page">
       <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
-        <Card isBlurred className="max-w-96 w-full shrink-0" style={{ "-webkit-backdrop-filter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
+        <Card isBlurred className="max-w-96 w-full shrink-0" style={{ "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
           <CardHeader>
             <p className="text-white text-center text-2xl">Mi Asistente SkinHealth</p>
           </CardHeader>
@@ -196,8 +236,9 @@ export default function Home() {
                     Acepto los
                   </p>
                 </Checkbox>
-                <Link className="cursor-pointer" size="sm" underline="always" onPress={onOpen}>términos y condiciones</Link>
+                <Link className="cursor-pointer" size="sm" underline="always" target="_blank" rel="noopener noreferrer" href="/terminos-y-condiciones">términos y condiciones</Link>
               </div>}
+              {isLogin && <Link className="cursor-pointer" size="sm" color="primary" onPress={onOpen}>¿Olvidaste tu contraseña?</Link>}
               <Button
                 type="submit" variant="solid" color="primary" size="md" isLoading={isLoading}>
                 {isLogin ? "Ingresar" : "Registrate"}

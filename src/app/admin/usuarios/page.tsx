@@ -1,8 +1,8 @@
 'use client'
-import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor, Chip } from '@heroui/react';
-import { IconCircleDashedCheck, IconCircleDashedX, IconSearch } from '@tabler/icons-react';
+import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor, Chip, Tooltip, Modal, useDisclosure, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@heroui/react';
+import { IconCircleDashedCheck, IconCircleDashedX, IconPencil, IconSearch, IconTrashX } from '@tabler/icons-react';
 import { getApp } from 'firebase/app';
-import { getFirestore, collection, DocumentData, doc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, DocumentData, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useCallback, useMemo, useState } from "react";
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { toast } from 'sonner';
@@ -14,7 +14,7 @@ const headerColumns = [
   { name: "ROL", uid: "role", sortable: true },
   { name: "PERIL COMPLETO", uid: "isProfileComplete", sortable: true },
   { name: "STATUS", uid: "approved", sortable: true },
-  // { name: "ACCIONES", uid: "actions" },
+  { name: "ACCIONES", uid: "actions" },
 ];
 
 
@@ -31,10 +31,51 @@ export default function AdminUsers() {
     column: "approved",
     direction: "ascending",
   });
+  const [docValues, setDocValues] = useState< {action: string, doc: DocumentData | null, callback: () => void}>({
+    action: '',
+    doc: null,
+    callback: () => {}
+  })
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const rowsPerPage = 20;
   const hasSearchFilter = Boolean(filterValue);
 
   let pages = 0;
+
+  const deleteUser = async (id: string) => {
+    try {
+      const db = getFirestore(getApp());
+      const userDoc = doc(collection(db, 'users'), id);
+      await deleteDoc(userDoc);
+      await deleteUser(id);
+      toast.success('Usuario eliminado exitosamente');
+    } catch (error) {
+      toast.error('Error al eliminar el usuario: ' + error);
+    }
+  }
+
+  const userActions = async(action: string, doc: DocumentData) => {
+    switch (action) {
+      case 'edit':
+        setDocValues({
+          doc,
+          action: 'Editar',
+          callback: () => console.log('Editado')
+        })
+        onOpen();
+        break;
+      case 'delete':
+        setDocValues({
+          doc,
+          action: 'Eliminar',
+          callback: () => deleteUser(doc.id)
+        })
+        onOpen();
+        break;
+      default:
+        break;
+    }
+  }
 
   const onClear = useCallback(() => {
     setFilterValue('');
@@ -111,76 +152,107 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
-      <Table
-        aria-label="users table"
-        isHeaderSticky
-        className='max-h-[78vh] h-auto'
-        sortDescriptor={sortDescriptor}
-        onSortChange={setSortDescriptor}
-        topContent={topContent}
-        bottomContent={
-          <div className="flex w-full justify-center">
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="secondary"
-              page={page}
-              total={pages}
-              onChange={(page) => setPage(page)}
-            />
-          </div>
-        }
-      >
-        <TableHeader columns={headerColumns} >
-          {(column) => (
-            <TableColumn key={column.uid} allowsSorting={column.sortable}>
-              {column.name}
-              {column.sortable && (
-                <span className="sr-only">Sort by {column.name}</span>
-              )}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          isLoading={loading}
-          loadingContent={<Spinner label="Cargando usuarios" />}
-          items={items}
+    <>
+      <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
+        <Table
+          aria-label="users table"
+          isHeaderSticky
+          className='max-h-[78vh] h-auto'
+          sortDescriptor={sortDescriptor}
+          onSortChange={setSortDescriptor}
+          topContent={topContent}
+          bottomContent={
+            <div className="flex w-full justify-center">
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="secondary"
+                page={page}
+                total={pages}
+                onChange={(page) => setPage(page)}
+              />
+            </div>
+          }
         >
-          {(doc: DocumentData) => (
-            <TableRow key={doc.id}>
-              <TableCell>{doc.data()?.name}</TableCell>
-              <TableCell>{doc.data()?.email}</TableCell>
-              <TableCell>{doc.data()?.role}</TableCell>
-              <TableCell>
-                <Chip
-                  size='md'
-                  variant='flat'
-                  color={doc.data()?.isProfileComplete ? 'success' : 'warning'}
-                  startContent={
-                    doc.data()?.isProfileComplete
-                      ? <IconCircleDashedCheck stroke={1.5} size={20} />
-                      : <IconCircleDashedX stroke={1.5} size={20} />
-                  }
-                >
-                  {doc.data()?.isProfileComplete ? 'Completo' : 'Incompleto'}
-                </Chip>
-              </TableCell>
-              <TableCell>
-                <Switch
-                  isSelected={doc.data()?.approved}
-                  color="success"
-                  size="sm"
-                  onValueChange={
-                    (value: boolean) => updateUser(doc.id, value)
-                  }
-                />
-              </TableCell>
-            </TableRow>
+          <TableHeader columns={headerColumns} >
+            {(column) => (
+              <TableColumn key={column.uid} allowsSorting={column.sortable} align={column.uid === 'actions' ? 'center' : 'start'}>
+                {column.name}
+                {column.sortable && (
+                  <span className="sr-only">Sort by {column.name}</span>
+                )}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody
+            isLoading={loading}
+            loadingContent={<Spinner label="Cargando usuarios" />}
+            items={items}
+          >
+            {(doc: DocumentData) => (
+              <TableRow key={doc.id}>
+                <TableCell>{doc.data()?.name}</TableCell>
+                <TableCell>{doc.data()?.email}</TableCell>
+                <TableCell>{doc.data()?.role}</TableCell>
+                <TableCell>
+                  <Chip
+                    size='md'
+                    variant='flat'
+                    color={doc.data()?.isProfileComplete ? 'success' : 'warning'}
+                    startContent={
+                      doc.data()?.isProfileComplete
+                        ? <IconCircleDashedCheck stroke={1.5} size={20} />
+                        : <IconCircleDashedX stroke={1.5} size={20} />
+                    }
+                  >
+                    {doc.data()?.isProfileComplete ? 'Completo' : 'Incompleto'}
+                  </Chip>
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    isSelected={doc.data()?.approved}
+                    color="success"
+                    size="sm"
+                    onValueChange={
+                      (value: boolean) => updateUser(doc.id, value)
+                    }
+                  />
+                </TableCell>
+                <TableCell align='center'>
+                  <div className='flex items-center justify-center gap-2'>
+                    {/* Todo: Add edit user button */}
+                    {/* <Tooltip content="Editar">
+                      <IconPencil className='cursor-pointer' stroke={2} size={20} onClick={() => userActions('edit', doc)} />
+                    </Tooltip> */}
+                    <Tooltip content="Eliminar" color="danger">
+                      <IconTrashX className='cursor-pointer' stroke={2} color='red' size={20} onClick={() => userActions('delete', doc)} />
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className='flex justify-center'>{docValues.action} usuario</ModalHeader>
+              <ModalBody className='text-center'>¿Está seguro que desea eliminar el usuario {docValues.doc?.data()?.email}?</ModalBody>
+              <ModalFooter>
+                <Button color="primary" variant="light" onPress={onClose}>
+                  Cancelar
+                </Button>
+                <Button color={docValues.action === 'Eliminar' ? 'danger' : 'primary'} onPress={() => {docValues.callback() ; onClose()}}>
+                  {docValues.action === 'Eliminar' ? 'Eliminar' : 'Guardar'}
+                </Button>
+              </ModalFooter>
+            </>
           )}
-        </TableBody>
-      </Table>
-    </div>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

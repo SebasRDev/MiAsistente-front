@@ -354,7 +354,8 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
           try {
             const updatedUserData = {
               ...state.user,
-              ...profileData
+              ...profileData,
+              isProfileComplete: true
             };
             dispatch({ type: 'SET_USER', payload: updatedUserData });
             const db = getFirestore(getApp());

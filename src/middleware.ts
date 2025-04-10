@@ -12,8 +12,12 @@ export async function middleware(request: NextRequest) {
   // Obtener la cookie de sesión
   const sessionCookie = request.cookies.get('user-session')?.value;
 
-  // Si no hay cookie de sesión y no estamos en la página principal, redirigir al login
-  if (sessionCookie === undefined && request.nextUrl.pathname !== '/') {
+  // Rutas públicas que no requieren autenticación
+  const publicRoutes = ['/', '/terminos-y-condiciones'];
+  const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname);
+
+  // Si no hay cookie de sesión y no estamos en una ruta pública, redirigir al inicio
+  if (sessionCookie === undefined && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
@@ -25,6 +29,7 @@ export async function middleware(request: NextRequest) {
     request.headers.set('x-user-id', sessionCookie);
   }
 
+  // Si hay una cookie de sesión y estamos en la página principal, redirigir a productos
   if (sessionCookie && request.nextUrl.pathname === '/') {
     const url = request.nextUrl.clone();
     url.pathname = '/productos';

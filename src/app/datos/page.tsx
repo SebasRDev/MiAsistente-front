@@ -44,12 +44,6 @@ const fields: Field[] = [
     type: 'text',
     segment: 'all'
   },
-  {
-    label: 'Recomendaciones',
-    name: 'recommendations',
-    type: 'textarea',
-    segment: 'formula'
-  }
 ]
 
 export default function Datos() {

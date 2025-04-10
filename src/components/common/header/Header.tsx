@@ -82,7 +82,7 @@ const Header = ({ session }: { session: string | null }) => {
 
   return (
     <>
-      <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "-webkit-backdrop-filter": "blur(16px) saturate(1.5)" } as CSSProperties}>
+      <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
         <NavbarContent className="gap-0">
           {userData && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />

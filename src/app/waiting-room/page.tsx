@@ -1,4 +1,41 @@
+'use client'
+import { getApp } from "firebase/app";
+import { doc, getFirestore } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useDocument } from "react-firebase-hooks/firestore";
+
+import { useQuote } from "@/context/QuoteContext"
+
 export default function  WaitingRoom() {
+  const { state } = useQuote();
+  const router = useRouter();
+  // Only create the document reference if we have a user
+  const userDocRef = state.user?.uid 
+    ? doc(getFirestore(getApp()), 'users', state.user.uid)
+    : null;
+  
+  // Only use the hook if we have a valid reference
+  const [userSnapshot, loading, error] = useDocument(
+    userDocRef,
+    userDocRef ? {
+      snapshotListenOptions: { includeMetadataChanges: true },
+    } : {}
+  );
+
+  useEffect(() => {
+    if (userSnapshot && userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      if (userData?.approved === true) {
+        if (userData?.isProfileComplete === true) {
+          router.push('/productos');
+        } else {
+          router.push('/perfil');
+        }
+      }
+    }
+  }, [userSnapshot, router]);
+  
   return (
     <div className="login-page">
       <div className="flex flex-col items-center justify-center">

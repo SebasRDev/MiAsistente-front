@@ -1,10 +1,10 @@
 'use client'
 
-import { Autocomplete, AutocompleteItem, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react"
+import { Autocomplete, AutocompleteItem, Drawer, DrawerBody, DrawerContent, DrawerHeader, Textarea } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
 import { motion } from 'framer-motion';
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { productOptions } from "@/app/productos/product"
 import ProductFormulaCards from "@/components/common/cards/productFormulaCards"
@@ -17,6 +17,7 @@ const Products = () => {
   const { state, dispatch } = useQuote();
   const { data } = useSuspenseQuery(productOptions);
   const [bondades, setBondades] = useState<Product | null>(null);
+  const autocompleteRef = useRef<HTMLInputElement>(null);
   const size = useWindowSize();
   const filteredData = state.segment === 'formula' ? data.filter((product: Product) => product.publicPrice !== null) : data;
 
@@ -33,11 +34,16 @@ const Products = () => {
         instanceId: `${product.id}_${Date.now()}`
       }
     })
+    if (autocompleteRef.current) {
+      // Programáticamente cerrar el popover
+      (document.activeElement as HTMLElement)?.blur();
+    }
   }
 
   return (
     <>
       <Autocomplete
+        ref={autocompleteRef}
         className="w-full"
         label="Buscar productos"
         variant="bordered"
@@ -127,6 +133,15 @@ const Products = () => {
           </DrawerContent>
         </Drawer>
       </div>
+      {state.segment === 'formula' && 
+        <Textarea
+          className="mt-4"
+          label="Recomendaciones del profesional de la estética"
+          name="recommendations"
+          value={state.quote.recommendations}
+          onChange={(e) => dispatch({ type: 'SET_CLIENT_INFO', payload: { field: 'recommendations', value: e.target.value } })}
+        />
+      }
     </>
   )
 }

@@ -46,7 +46,7 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
     dispatch({ type: 'REMOVE_PRODUCT', payload: product.id, instanceId: product.instanceId })
   }
 
-  return <Card className="w-full" key={product.code} isBlurred style={{ "--twBackdropBlur": "blur(4px)", "-webkit-backdrop-filter": "blur(4px) saturate(1.5)" } as React.CSSProperties}>
+  return <Card className="w-full" key={product.code} isBlurred style={{ "--twBackdropBlur": "blur(4px)", "WebkitBackdropFilter": "blur(4px) saturate(1.5)" } as React.CSSProperties}>
     <CardHeader className="flex gap-2">
       <span className="font-bold text-primary">{product.code}</span>
       {`${product.name}`}
