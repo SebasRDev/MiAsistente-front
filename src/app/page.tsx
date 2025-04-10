@@ -1,30 +1,43 @@
 'use client'
 
-import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Form, Input, Link, Modal, ModalContent, ModalHeader, useDisclosure } from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Form, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { getApp } from "firebase/app";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { useCreateUserWithEmailAndPassword, useSendPasswordResetEmail, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import { toast } from "sonner";
 
 import { Google } from "@/components/common/icons/icons";
 import { createSession } from "@/utils/firebase/auth-actions";
 import { firebaseAuth } from "@/utils/firebase/config";
+import { translateAuthError } from "@/utils/errorTranslations";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [isTerms, setIsTerms] = useState(false);
+  const [recoverPasswordEmail, setRecoverPasswordEmail] = useState('');
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const router = useRouter();
 
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(firebaseAuth);
+  const [signInWithEmailAndPassword, user, loading, signInError] = useSignInWithEmailAndPassword(firebaseAuth);
   const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(firebaseAuth);
   const [signInWithGoogle] = useSignInWithGoogle(firebaseAuth);
+  const [sendPasswordResetEmail, sending, errorResetPassword] = useSendPasswordResetEmail(
+    firebaseAuth
+  );
+
+  if (signInError) {
+    toast.error(translateAuthError(signInError.code));
+  }
+
+  if (errorResetPassword) {
+    toast.error(errorResetPassword.message);
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,20 +85,31 @@ export default function Home() {
             approved: false,
             isProfileComplete: false
           });
+          // Redirigir a la sala de espera después de registrar un nuevo usuario
           router.push('/waiting-room');
-        } 
-        router.push('/productos');
+          return;
+        }
+        // Si el usuario ya existe, verificar su estado
+        const userData = userDoc.data();
+        if (userData?.approved === false) {
+          router.push('/waiting-room');
+        } else if (userData?.isProfileComplete === false) {
+          router.push('/perfil');
+        } else {
+          router.push('/productos');
+        }
       }
-
 
     } catch (error: any) {
       if (!error.toString().includes('NEXT_REDIRECT')) {
         console.error("Error real:", error);
         toast.error('An unexpected error occurred');
       }
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
+
   }
 
   const handleSignInGoogle = async () => {
@@ -145,7 +169,7 @@ export default function Home() {
         }
 
         await createSession(result.user.uid);
-        if (userDocRef){
+        if (userDocRef) {
           const userDoc = await getDoc(userDocRef);
           if (userDoc.data()?.approved === false) {
             router.push('/waiting-room');
@@ -165,6 +189,7 @@ export default function Home() {
   }
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+
   return (
     <div className="login-page">
       <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
@@ -257,12 +282,39 @@ export default function Home() {
           </CardFooter>
         </Card>
       </div>
-      <Modal isOpen={isOpen} placement="auto" onOpenChange={onOpenChange}>
+      <Modal backdrop="blur" isOpen={isOpen} placement="auto" onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
-            <ModalHeader>
-              Términos y condiciones
-            </ModalHeader>
+            <>
+              <ModalHeader className='flex justify-center'>
+                <h2 className="font-Trajan-pro-bold text-3xl text-primary">Recuperar contraseña</h2>
+              </ModalHeader>
+              <ModalBody>
+                <Input label="Email" name="email" placeholder="Ingresa tu email" type="email" value={recoverPasswordEmail} onChange={(e) => setRecoverPasswordEmail(e.target.value)} />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  isLoading={sending}
+                  onPress={
+                    async () => {
+                      const success = await sendPasswordResetEmail(
+                        recoverPasswordEmail,
+                        // actionCodeSettings
+                      );
+                      if (success) {
+                        console.log('Email sent! to: ', recoverPasswordEmail);
+                        onClose();
+                        toast.success('Se ha enviado un correo electrónico con un enlace para recuperar la contraseña');
+                      }
+                    }
+                  }
+                >
+                  Confirmar
+                </Button>
+              </ModalFooter>
+            </>
           )}
         </ModalContent>
       </Modal>
