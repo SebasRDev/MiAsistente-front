@@ -133,10 +133,10 @@ const Products = () => {
           </DrawerContent>
         </Drawer>
       </div>
-      {state.segment === 'formula' && 
+      {state.segment === 'formula' &&
         <Textarea
           className="mt-4"
-          label="Recomendaciones del profesional de la estética"
+          label="Recomendaciones Profesional de la Estética: "
           name="recommendations"
           value={state.quote.recommendations}
           onChange={(e) => dispatch({ type: 'SET_CLIENT_INFO', payload: { field: 'recommendations', value: e.target.value } })}
