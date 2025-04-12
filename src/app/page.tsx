@@ -25,11 +25,15 @@ export default function Home() {
   const router = useRouter();
 
   const [signInWithEmailAndPassword, user, loading, signInError] = useSignInWithEmailAndPassword(firebaseAuth);
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(firebaseAuth);
+  const [createUserWithEmailAndPassword, registerUser, registerloading, registerError] = useCreateUserWithEmailAndPassword(firebaseAuth);
   const [signInWithGoogle] = useSignInWithGoogle(firebaseAuth);
   const [sendPasswordResetEmail, sending, errorResetPassword] = useSendPasswordResetEmail(
     firebaseAuth
   );
+
+  if (registerError) {
+    toast.error(translateAuthError(registerError.code));
+  }
 
   if (signInError) {
     toast.error(translateAuthError(signInError.code));
@@ -105,7 +109,7 @@ export default function Home() {
         console.error("Error real:", error);
         toast.error('An unexpected error occurred');
       }
-      console.log(error);
+      console.log({ code: error.code, message: error.message });
     } finally {
       setIsLoading(false);
     }
