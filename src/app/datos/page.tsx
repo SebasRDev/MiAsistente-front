@@ -3,6 +3,7 @@ import { Input, Tabs, Tab, Textarea } from "@heroui/react";
 import { IconPercentage } from '@tabler/icons-react';
 
 import { useQuote } from "@/context/QuoteContext";
+import { useEffect } from "react";
 
 type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional' | 'recommendations';
 
@@ -48,6 +49,18 @@ const fields: Field[] = [
 
 export default function Datos() {
   const { state, dispatch } = useQuote();
+
+  useEffect(() => {
+    if (state.user) {
+      const fullName = `${state.user.name} ${state.user.lastName}`.trim();
+      if (fullName && (!state.quote.profesional || state.quote.profesional === '')) {
+        dispatch({
+          type: 'SET_CLIENT_INFO',
+          payload: { field: 'profesional', value: fullName }
+        });
+      }
+    }
+  }, [state.user, state.segment]);
 
   const handleChange = (value: string, field: 'client' | 'phone' | 'id' | 'gift' | 'profesional' | 'recommendations') => {
     dispatch({
