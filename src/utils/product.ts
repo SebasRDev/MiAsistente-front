@@ -89,7 +89,12 @@ export const calculateSummaryTotals = (
 
   const totalHome = homeProducts.reduce((acc, curr) => {
     if (curr.profesionalPrice === null) return acc;
-    return acc + curr.profesionalPrice * (curr.quantity ?? 0);
+    return acc + getProductPrice(
+      curr.profesionalPrice,
+      curr.quantity ?? 0,
+      curr.discount ?? 0,
+      generalDiscount
+    );
   }, 0);
 
   // Calculate profit metrics
