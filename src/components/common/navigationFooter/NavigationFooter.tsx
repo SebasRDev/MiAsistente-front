@@ -37,6 +37,7 @@ const NavigationFooter = () => {
       "generalDiscount": state.quote.generalDiscount,
       "phone": state.quote.phone,
       "id": state.quote.id,
+      "recommendations": state.quote.recommendations,
     },
     "kit": state.kit,
     "products": state.products.map(({ id, quantity, discount }) => ({ id, quantity, discount })),
