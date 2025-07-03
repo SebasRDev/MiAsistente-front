@@ -43,15 +43,36 @@ const NavigationFooter = () => {
     "products": state.products.map(({ id, quantity, discount }) => ({ id, quantity, discount })),
   }
 
+  // Función para detectar si estamos en móvil
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  // Función para detectar si el navegador soporta Web Share API
+  const canShare = () => {
+    return 'share' in navigator;
+  };
+
+  // Función auxiliar para descargar archivo
+  const downloadFile = (url, filename) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   const getPDF = async () => {
     setPdfLoading(true);
     setDownloadValue(0);
+    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/quotes/${state.segment}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-
         },
         body: JSON.stringify(requestBody)
       });
@@ -62,32 +83,124 @@ const NavigationFooter = () => {
 
       // Get the blob from the response
       const blob = await response.blob();
-
+      
       // Create a URL for the blob
       const url = window.URL.createObjectURL(blob);
+      const filename = `formula-${state.quote.client || 'cotizacion'}.pdf`;
 
-      // Create a temporary link element
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `formula-${state.quote.client || 'cotizacion'}.pdf`;
+      if (isMobile()) {
+        // En móvil: primero abrir para vista previa
+        const newWindow = window.open(url, '_blank');
+        
+        // Si soporta Web Share API, mostrar opción de compartir
+        if (canShare()) {
+          // Crear archivo para compartir
+          const file = new File([blob], filename, { type: 'application/pdf' });
+          
+          // Mostrar toast con opción de compartir
+          setTimeout(() => {
+            toast.success('PDF generado exitosamente', {
+              action: {
+                label: 'Compartir',
+                onClick: async () => {
+                  try {
+                    await navigator.share({
+                      files: [file],
+                      title: 'Cotización',
+                      text: 'Compartir cotización PDF'
+                    });
+                  } catch (error) {
+                    if (error.name !== 'AbortError') {
+                      console.error('Error sharing:', error);
+                      // Fallback: descargar el archivo
+                      downloadFile(url, filename);
+                    }
+                  }
+                }
+              }
+            });
+          }, 1000);
+        } else {
+          // Si no soporta compartir, solo mostrar descarga
+          setTimeout(() => {
+            toast.success('PDF abierto. ¿Deseas descargarlo?', {
+              action: {
+                label: 'Descargar',
+                onClick: () => downloadFile(url, filename)
+              }
+            });
+          }, 1000);
+        }
+      } else {
+        // En desktop: abrir en nueva pestaña y descargar
+        window.open(url, '_blank');
+        
+        // También ofrecer descarga
+        setTimeout(() => {
+          toast.success('PDF abierto en nueva pestaña', {
+            action: {
+              label: 'Descargar',
+              onClick: () => downloadFile(url, filename)
+            }
+          });
+        }, 500);
+      }
 
-      // Append to document, click, and remove
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the URL
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      // You might want to add some user feedback here
       toast.error('No se pudo generar el PDF');
-
     } finally {
       setDownloadValue(100);
       setPdfLoading(false);
     }
-  }
+  };
+
+  // const getPDF = async () => {
+  //   setPdfLoading(true);
+  //   setDownloadValue(0);
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/quotes/${state.segment}`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+
+  //       },
+  //       body: JSON.stringify(requestBody)
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     // Get the blob from the response
+  //     const blob = await response.blob();
+
+  //     // Create a URL for the blob
+  //     const url = window.URL.createObjectURL(blob);
+
+  //     // Create a temporary link element
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = `formula-${state.quote.client || 'cotizacion'}.pdf`;
+
+  //     // Append to document, click, and remove
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+
+  //     // Clean up the URL
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error('Error downloading PDF:', error);
+  //     // You might want to add some user feedback here
+  //     toast.error('No se pudo generar el PDF');
+
+  //   } finally {
+  //     setDownloadValue(100);
+  //     setPdfLoading(false);
+  //   }
+  // }
+  
 
   return (
     <>

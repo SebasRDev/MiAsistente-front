@@ -1,0 +1,39 @@
+{
+  "name": "Mi Asistente SKH",
+  "short_name": "Mi Asistente",
+  "start_url": "/",
+  "scope": "/",
+  "description": "Cotizador| Formulador Skinhealth Colombia",
+  "orientation": "any",
+  "display": "standalone",
+  "dir": "auto",
+  "lang": "es-CO",
+  "theme_color": "#658864",
+  "background_color": "#658864",
+  "icons": [
+    {
+      "src": "manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -9,10 +9,15 @@ import React, { useState } from "react";
 import { useCreateUserWithEmailAndPassword, useSendPasswordResetEmail, useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import { toast } from "sonner";
 
+
 import { Google } from "@/components/common/icons/icons";
+import InstallPrompt from "@/components/pwa/InstallPrompt";
+import PushNotificationManager from "@/components/pwa/PushNoptificationsManager";
+import { translateAuthError } from "@/utils/errorTranslations";
 import { createSession } from "@/utils/firebase/auth-actions";
 import { firebaseAuth } from "@/utils/firebase/config";
-import { translateAuthError } from "@/utils/errorTranslations";
+
+import { subscribeUser, unsubscribeUser, sendNotification } from './actions';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -24,8 +29,8 @@ export default function Home() {
 
   const router = useRouter();
 
-  const [signInWithEmailAndPassword, user, loading, signInError] = useSignInWithEmailAndPassword(firebaseAuth);
-  const [createUserWithEmailAndPassword, registerUser, registerloading, registerError] = useCreateUserWithEmailAndPassword(firebaseAuth);
+  const [signInWithEmailAndPassword, , , signInError] = useSignInWithEmailAndPassword(firebaseAuth);
+  const [createUserWithEmailAndPassword, , , registerError] = useCreateUserWithEmailAndPassword(firebaseAuth);
   const [signInWithGoogle] = useSignInWithGoogle(firebaseAuth);
   const [sendPasswordResetEmail, sending, errorResetPassword] = useSendPasswordResetEmail(
     firebaseAuth
@@ -322,6 +327,8 @@ export default function Home() {
           )}
         </ModalContent>
       </Modal>
+      <PushNotificationManager />
+      <InstallPrompt />
     </div>
   )
 }

@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get('user-session')?.value;
 
   // Rutas públicas que no requieren autenticación
-  const publicRoutes = ['/', '/terminos-y-condiciones'];
+  const publicRoutes = ['/', '/terminos-y-condiciones', '/sw.js', "/manifest.json"];
   const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname);
 
   // Si no hay cookie de sesión y no estamos en una ruta pública, redirigir al inicio

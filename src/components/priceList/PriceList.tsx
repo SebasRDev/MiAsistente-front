@@ -55,7 +55,7 @@ const PriceListContent = () => {
         className="w-full rounded-md border border-gray-300 bg-gray-100 p-2 text-sm"
       />
       {filteredProducts?.map((product: Product) => (
-        <div key={product.id} className="flex gap-4 items-center backdrop-blur-sm saturate-150 p-4 w-full lg:w-1/2">
+        <div key={product.id} className="flex gap-4 items-center backdrop-blur-sm saturate-150 p-4 w-full lg:w-[calc(50%_-_10px)]">
           {/* <div className="h-20 aspect-square rounded-md bg-primary-900 flex items-center justify-center">
             <img src={product.image} alt={product.name} className="h-full object-contain"/>
           </div> */}
