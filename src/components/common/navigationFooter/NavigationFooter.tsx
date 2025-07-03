@@ -54,7 +54,7 @@ const NavigationFooter = () => {
   };
 
   // Función auxiliar para descargar archivo
-  const downloadFile = (url, filename) => {
+  const downloadFile = (url:string, filename:string) => {
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
@@ -110,7 +110,7 @@ const NavigationFooter = () => {
                       text: 'Compartir cotización PDF'
                     });
                   } catch (error) {
-                    if (error.name !== 'AbortError') {
+                    if (typeof error === 'object' && error !== null && 'name' in error && (error as { name: string }).name !== 'AbortError') {
                       console.error('Error sharing:', error);
                       // Fallback: descargar el archivo
                       downloadFile(url, filename);
