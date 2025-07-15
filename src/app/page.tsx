@@ -92,7 +92,8 @@ export default function Home() {
             avatar: result.user.photoURL,
             createdAt: new Date(),
             approved: false,
-            isProfileComplete: false
+            isProfileComplete: false,
+            role: 'profesional' // Asignar rol por defecto
           });
           // Redirigir a la sala de espera después de registrar un nuevo usuario
           router.push('/waiting-room');
@@ -148,7 +149,8 @@ export default function Home() {
               avatar: result.user.photoURL,
               createdAt: new Date(),
               approved: false,
-              isProfileComplete: false
+              isProfileComplete: false,
+              role: 'profesional' // Asignar rol por defecto
             });
           } else {
             // Si el usuario existe, verificar qué campos necesitan actualizarse
