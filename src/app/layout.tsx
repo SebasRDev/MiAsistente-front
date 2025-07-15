@@ -28,9 +28,10 @@ export const metadata: Metadata = {
     icon: "/favicon-196.png",
     apple: "/apple-icon-180.png",
   },
+  themeColor: "#658864",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     startupImage: [
       {
         url: "/apple-splash-2048-2732.jpg",

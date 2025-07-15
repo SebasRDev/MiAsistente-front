@@ -1,3 +1,4 @@
+import { FieldName } from '@/app/datos/page';
 import { DocumentData } from 'firebase/firestore';
 
 export interface Product {
@@ -24,6 +25,8 @@ export interface QuoteState {
     phone: string;
     id: string;
     gift: string;
+    city?: string;
+    campaign?: string;
     profesional: string;
     generalDiscount: number;
     recommendations?: string;
@@ -38,13 +41,7 @@ export type QuoteAction =
   | {
       type: 'SET_CLIENT_INFO';
       payload: {
-        field:
-          | 'client'
-          | 'phone'
-          | 'id'
-          | 'gift'
-          | 'profesional'
-          | 'recommendations';
+        field: FieldName;
         value: string;
       };
     }

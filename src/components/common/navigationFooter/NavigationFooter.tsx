@@ -1,6 +1,6 @@
 'use client'
-import { CircularProgress } from "@heroui/react";
-import { IconUserEdit, IconReceipt2, IconVaccineBottle, IconDownload } from "@tabler/icons-react"
+import { Button, CircularProgress } from "@heroui/react";
+import { IconUserEdit, IconReceipt2, IconVaccineBottle, IconDownload, IconPercentage } from "@tabler/icons-react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,6 +34,8 @@ const NavigationFooter = () => {
       "name": state.quote.client,
       "consultant": state.quote.profesional,
       "gift": state.quote.gift,
+      "city": state.quote.city,
+      "campaign": state.quote.campaign,
       "generalDiscount": state.quote.generalDiscount,
       "phone": state.quote.phone,
       "id": state.quote.id,
@@ -90,7 +92,7 @@ const NavigationFooter = () => {
 
       if (isMobile()) {
         // En móvil: primero abrir para vista previa
-        const newWindow = window.open(url, '_blank');
+        // const newWindow = window.open(url, '_blank');
         
         // Si soporta Web Share API, mostrar opción de compartir
         if (canShare()) {
@@ -100,24 +102,64 @@ const NavigationFooter = () => {
           // Mostrar toast con opción de compartir
           setTimeout(() => {
             toast.success('PDF generado exitosamente', {
-              action: {
-                label: 'Compartir',
-                onClick: async () => {
-                  try {
-                    await navigator.share({
-                      files: [file],
-                      title: 'Cotización',
-                      text: 'Compartir cotización PDF'
-                    });
-                  } catch (error) {
-                    if (typeof error === 'object' && error !== null && 'name' in error && (error as { name: string }).name !== 'AbortError') {
-                      console.error('Error sharing:', error);
-                      // Fallback: descargar el archivo
-                      downloadFile(url, filename);
-                    }
-                  }
-                }
-              }
+              action: (
+                <div className="flex gap-2 flex-col justify-end items-end flex-grow">
+                  <Button 
+                    color="primary" 
+                    variant="solid"
+                    onPress={async () => {
+                      try {
+                        await navigator.share({
+                          files: [file],
+                          title: 'Cotización',
+                          text: 'Compartir cotización PDF'
+                        });
+                      } catch (error) {
+                        if (typeof error === 'object' && error !== null && 'name' in error && 
+                            (error as { name: string }).name !== 'AbortError') {
+                          console.error('Error sharing:', error);
+                          downloadFile(url, filename);
+                        }
+                      }
+                    }}
+                  >
+                    Compartir
+                  </Button>
+                  <Button 
+                    color="primary" 
+                    variant="bordered"
+                    onPress={() => downloadFile(url, filename)}
+                  >
+                    Descargar
+                  </Button>
+                  {/* <button 
+                    onClick={() => downloadFile(url, filename)}
+                    className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+                  >
+                    Descargar
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      try {
+                        await navigator.share({
+                          files: [file],
+                          title: 'Cotización',
+                          text: 'Compartir cotización PDF'
+                        });
+                      } catch (error) {
+                        if (typeof error === 'object' && error !== null && 'name' in error && 
+                            (error as { name: string }).name !== 'AbortError') {
+                          console.error('Error sharing:', error);
+                          downloadFile(url, filename);
+                        }
+                      }
+                    }}
+                    className="px-3 py-1 bg-green-500 text-white rounded text-sm"
+                  >
+                    Compartir
+                  </button> */}
+                </div>
+              )
             });
           }, 1000);
         } else {
@@ -133,7 +175,7 @@ const NavigationFooter = () => {
         }
       } else {
         // En desktop: abrir en nueva pestaña y descargar
-        window.open(url, '_blank');
+        // window.open(url, '_blank');
         
         // También ofrecer descarga
         setTimeout(() => {
@@ -205,7 +247,7 @@ const NavigationFooter = () => {
   return (
     <>
       {state.user && !isWaitingRoom && <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 overflow-hidden">
-        <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
+        <div className="grid h-full max-w-lg grid-cols-6 mx-auto">
           <Link
             href="/datos"
             className="flex items-center justify-center group hover:bg-gray-50"
@@ -226,6 +268,36 @@ const NavigationFooter = () => {
               color={pathname == '/total' ? "#658864" : "#6b7280"}
               size={35}
               className="group-hover:text-primary"
+            />
+          </Link>
+          <Link
+            href="/descuento-general"
+            className="flex items-center justify-center group hover:bg-gray-50"
+          >
+            <IconPercentage
+              stroke={1.5}
+              color={pathname == '/descuento-general' ? "#658864" : "#6b7280"}
+              size={35}
+              className="group-hover:text-primary"
+            />
+          </Link>
+          <Link
+            href="/productos"
+            className="flex items-center justify-center group hover:bg-gray-50"
+          >
+            <IconVaccineBottle
+              stroke={1.5}
+              color={pathname == '/productos' ? "#658864" : "#6b7280"}
+              size={35}
+              className="group-hover:text-primary"
+            />
+          </Link>
+          <Link
+            href="/kits"
+            className="flex items-center justify-center group hover:bg-gray-50"
+          >
+            <KitsIcon
+              color={pathname == '/kits' ? "#658864" : "#6b7280"}
             />
           </Link>
           <div className="flex items-center justify-center">
@@ -257,25 +329,6 @@ const NavigationFooter = () => {
               }
             </button>
           </div>
-          <Link
-            href="/productos"
-            className="flex items-center justify-center group hover:bg-gray-50"
-          >
-            <IconVaccineBottle
-              stroke={1.5}
-              color={pathname == '/productos' ? "#658864" : "#6b7280"}
-              size={35}
-              className="group-hover:text-primary"
-            />
-          </Link>
-          <Link
-            href="/kits"
-            className="flex items-center justify-center group hover:bg-gray-50"
-          >
-            <KitsIcon
-              color={pathname == '/kits' ? "#658864" : "#6b7280"}
-            />
-          </Link>
         </div>
       </div>}
     </>

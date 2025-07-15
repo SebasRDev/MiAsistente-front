@@ -3,13 +3,18 @@
   "short_name": "Mi Asistente",
   "start_url": "/",
   "scope": "/",
-  "description": "Cotizador| Formulador Skinhealth Colombia",
-  "orientation": "any",
+  "description": "Cotizador | Formulador Skinhealth Colombia",
+  "orientation": "portrait-primary",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui"],
   "dir": "auto",
   "lang": "es-CO",
   "theme_color": "#658864",
   "background_color": "#658864",
+  "categories": ["productivity", "business", "medical"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",

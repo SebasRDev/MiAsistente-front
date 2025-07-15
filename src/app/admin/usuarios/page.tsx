@@ -1,12 +1,44 @@
 'use client'
-import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor, Chip, Tooltip, Modal, useDisclosure, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@heroui/react';
-import { IconCircleDashedCheck, IconCircleDashedX, IconPencil, IconSearch, IconTrashX } from '@tabler/icons-react';
+import { Input, Pagination, Spinner, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, SortDescriptor, Chip, Tooltip, Modal, useDisclosure, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Listbox, ListboxItem, PopoverTrigger, Popover, PopoverContent } from '@heroui/react';
+import { IconCaretDownFilled, IconCircleDashedCheck, IconCircleDashedX, IconPencil, IconSearch, IconTrashX } from '@tabler/icons-react';
 import { getApp } from 'firebase/app';
-import { getFirestore, collection, DocumentData, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, DocumentData, doc, updateDoc, deleteDoc, getDocs, writeBatch } from 'firebase/firestore';
 import { useCallback, useMemo, useState } from "react";
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { toast } from 'sonner';
 
+
+// Función para actualizar todos los roles a "asesor"
+// const updateAllRolesToAsesor = async () => {
+//   try {
+//     const db = getFirestore(getApp());
+//     const usersCollection = collection(db, 'users');
+    
+//     // Obtener todos los documentos
+//     const querySnapshot = await getDocs(usersCollection);
+    
+//     // Usar batch para actualizar múltiples documentos de forma eficiente
+//     const batch = writeBatch(db);
+    
+//     let updateCount = 0;
+    
+//     querySnapshot.forEach((document) => {
+//       const userRef = doc(db, 'users', document.id);
+//       batch.update(userRef, { role: 'asesor' });
+//       updateCount++;
+//     });
+    
+//     // Ejecutar todas las actualizaciones
+//     await batch.commit();
+    
+//     toast.success(`Se actualizaron ${updateCount} usuarios a rol "asesor"`);
+//     console.log(`Actualizados ${updateCount} usuarios exitosamente`);
+    
+//   } catch (error) {
+//     console.error('Error al actualizar los roles:', error);
+//     toast.error('Error al actualizar los roles: ' + error);
+//   }
+// };
 
 const headerColumns = [
   { name: "NOMBRE", uid: "name", sortable: true },
@@ -139,6 +171,14 @@ export default function AdminUsers() {
         onClear={() => onClear()}
         onValueChange={onSearchChange}
       />
+      {/* <Button
+        className="ml-2"
+        color="primary"
+        variant="flat"
+        onPress={updateAllRolesToAsesor}
+      >
+        Actualizar todos a Asesor
+      </Button> */}
     </div>
   }, [filterValue, onClear, onSearchChange])
 
@@ -148,6 +188,16 @@ export default function AdminUsers() {
       await updateDoc(userRef, { approved: status });
     } catch (error) {
       toast.error("Error al actualizar el usuario : " + error);
+    }
+  }
+
+  const updateRole = async (id: string, role: 'admin' | 'profesional' | 'asesor') => {
+    try {
+      const userRef = doc(getFirestore(getApp()), 'users', id);
+      await updateDoc(userRef, { role });
+      toast.success("Rol actualizado exitosamente");
+    } catch (error) {
+      toast.error("Error al actualizar el rol del usuario: " + error);
     }
   }
 
@@ -194,7 +244,35 @@ export default function AdminUsers() {
               <TableRow key={doc.id}>
                 <TableCell>{doc.data()?.name}</TableCell>
                 <TableCell>{doc.data()?.email}</TableCell>
-                <TableCell>{doc.data()?.role}</TableCell>
+                <TableCell>
+                  <Popover offset={10} placement="bottom">
+                    <PopoverTrigger>
+                      <Chip
+                        size='md'
+                        variant='bordered'
+                        color={
+                          doc.data()?.role === 'admin' ? 'secondary' :
+                          doc.data()?.role === 'profesional' ? 'success' :
+                          doc.data()?.role === 'asesor' ? 'warning' : 'default'
+                        }
+                        endContent={<IconCaretDownFilled stroke={1} size={15} />}
+                      >
+                        {doc.data()?.role}
+                      </Chip>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <Listbox 
+                        aria-label="Cambiar Rol"
+                        items={items}
+                        onAction={(key) => updateRole(doc.id, key as "profesional" | "admin" | "asesor")}
+                      >
+                        <ListboxItem key="admin">Admin</ListboxItem>
+                        <ListboxItem key="profesional">Profesional</ListboxItem>
+                        <ListboxItem key="asesor">Asesor</ListboxItem>
+                      </Listbox>
+                    </PopoverContent>
+                  </Popover>
+                </TableCell>
                 <TableCell>
                   <Chip
                     size='md'

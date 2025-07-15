@@ -5,7 +5,7 @@
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
-import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers } from "@tabler/icons-react";
+import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconPencilCheck } from "@tabler/icons-react";
 import { getApp } from "firebase/app";
 import { doc, getFirestore } from "firebase/firestore";
 import Image from "next/image";
@@ -61,6 +61,7 @@ const Header = ({ session }: { session: string | null }) => {
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
     onClose();
+    router.push('/productos')
   };
 
   const handleReset = async () => {
@@ -124,19 +125,21 @@ const Header = ({ session }: { session: string | null }) => {
               <DrawerBody className="pt-16">
                 <Listbox>
                   <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
-                    <ListboxItem
-                      key="quote"
-                      className={state.segment === 'quote' ? 'text-primary' : ''}
-                      description="Cotizacion para mi cliente"
-                      startContent={
-                        <div className="pointer-events-none flex items-center">
-                          <IconFileDollar stroke={2} />
-                        </div>
-                      }
-                      onPress={() => handleSegmentChange('quote')}
-                    >
-                      Cotizador
-                    </ListboxItem>
+                    {['admin', 'profesional'].includes(userData?.role) ? (
+                      <ListboxItem
+                        key="quote"
+                        className={state.segment === 'quote' ? 'text-primary' : ''}
+                        description="Cotizacion para mi cliente"
+                        startContent={
+                          <div className="pointer-events-none flex items-center">
+                            <IconFileDollar stroke={2} />
+                          </div>
+                        }
+                        onPress={() => handleSegmentChange('quote')}
+                      >
+                        Cotizador
+                      </ListboxItem>
+                    ) : null}
                     <ListboxItem
                       key="formula"
                       className={state.segment === 'formula' ? 'text-primary' : ''}
@@ -150,6 +153,37 @@ const Header = ({ session }: { session: string | null }) => {
                     >
                       Formulador
                     </ListboxItem>
+                    <ListboxItem
+                      key="price-list"
+                      description="Lista de precios virtual"
+                      startContent={
+                        <div className="pointer-events-none flex items-center">
+                          <IconDeviceMobileDollar stroke={2} />
+                        </div>
+                      }
+                      onPress={() => {
+                        onClose();
+                        router.push('/lista-de-precios')
+                      }}
+                    >
+                      Lista de precios
+                    </ListboxItem>
+                    <ListboxItem
+                      key="public-catalog"
+                      description="Catalogo público"
+                      startContent={
+                        <div className="pointer-events-none flex items-center">
+                          <IconBook stroke={2} />
+                        </div>
+                      }
+                      onPress={() => {
+                        onClose();
+                        window.open('https://simplebooklet.com/catalogopublicoskh', '_blank');
+                      }}
+                    >
+                      Catalogo público
+                    </ListboxItem>
+                    
                     <ListboxItem
                       key="reset"
                       className="text-danger"
