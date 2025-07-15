@@ -125,7 +125,7 @@ const Header = ({ session }: { session: string | null }) => {
               <DrawerBody className="pt-16">
                 <Listbox>
                   <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
-                    {['admin', 'profesional'].includes(userData?.role) ? (
+                    {['admin', 'asesor'].includes(userData?.role) ? (
                       <ListboxItem
                         key="quote"
                         className={state.segment === 'quote' ? 'text-primary' : ''}

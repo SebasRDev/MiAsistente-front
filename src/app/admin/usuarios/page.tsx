@@ -8,8 +8,8 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import { toast } from 'sonner';
 
 
-// Función para actualizar todos los roles a "asesor"
-// const updateAllRolesToAsesor = async () => {
+// Función para actualizar todos los roles a "profesional"
+// const updateAllRolesToProfesional = async () => {
 //   try {
 //     const db = getFirestore(getApp());
 //     const usersCollection = collection(db, 'users');
@@ -24,14 +24,14 @@ import { toast } from 'sonner';
     
 //     querySnapshot.forEach((document) => {
 //       const userRef = doc(db, 'users', document.id);
-//       batch.update(userRef, { role: 'asesor' });
+//       batch.update(userRef, { role: 'profesional' });
 //       updateCount++;
 //     });
     
 //     // Ejecutar todas las actualizaciones
 //     await batch.commit();
     
-//     toast.success(`Se actualizaron ${updateCount} usuarios a rol "asesor"`);
+//     toast.success(`Se actualizaron ${updateCount} usuarios a rol "profesional"`);
 //     console.log(`Actualizados ${updateCount} usuarios exitosamente`);
     
 //   } catch (error) {
@@ -175,9 +175,9 @@ export default function AdminUsers() {
         className="ml-2"
         color="primary"
         variant="flat"
-        onPress={updateAllRolesToAsesor}
+        onPress={updateAllRolesToProfesional}
       >
-        Actualizar todos a Asesor
+        Actualizar todos a Profesional
       </Button> */}
     </div>
   }, [filterValue, onClear, onSearchChange])

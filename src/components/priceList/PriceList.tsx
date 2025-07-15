@@ -65,13 +65,13 @@ const PriceListContent = () => {
                     base: "bg-green-900/40 rounded-md",
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}>{product.publicPrice ? 'USO EN CASA' : 'USO EN CABINA'}</Chip>
-                <Chip variant="flat" classNames={{
+                {/* <Chip variant="flat" classNames={{
                     base: "bg-gradient-to-br from-lime-800/40 to-green-900/40 rounded-md",
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}
                 >
                   LIPOSOMAS- HIDRATACION- NUTRICION
-                </Chip>
+                </Chip> */}
               </div>
               <div className="flex">
                 {product.image && <div className="h-20 aspect-square rounded-md flex items-center justify-center">
