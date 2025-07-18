@@ -2,6 +2,7 @@
 
 import { Chip } from "@heroui/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useEffect, useState, useMemo } from "react";
 
 import { productOptions } from "@/app/productos/product";
@@ -65,17 +66,17 @@ const PriceListContent = () => {
                     base: "bg-green-900/40 rounded-md",
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}>{product.publicPrice ? 'USO EN CASA' : 'USO EN CABINA'}</Chip>
-                {/* <Chip variant="flat" classNames={{
+                {product?.category !== null && <Chip variant="flat" classNames={{
                     base: "bg-gradient-to-br from-lime-800/40 to-green-900/40 rounded-md",
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}
                 >
-                  LIPOSOMAS- HIDRATACION- NUTRICION
-                </Chip> */}
+                  {product?.category}
+                </Chip>}
               </div>
               <div className="flex">
                 {product.image && <div className="h-20 aspect-square rounded-md flex items-center justify-center">
-                  <img src={product.image} alt={product.name} className="h-full object-contain"/>
+                  <Image className="h-full object-contain" src={product.image} alt={product.name} width={50} height={50}/>
                 </div>}
                 <div>
                   <p className="text-md text-primary">{product.code}</p>

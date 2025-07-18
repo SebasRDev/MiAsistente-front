@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NEXT_PUBLIC_NODE_ENV === 'production',
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
