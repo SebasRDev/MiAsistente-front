@@ -103,7 +103,7 @@ const NavigationFooter = () => {
           setTimeout(() => {
             toast.success('PDF generado exitosamente', {
               action: (
-                <div className="flex gap-2 flex-col justify-end items-end flex-grow">
+                <div className="flex gap-2 flex-col justify-end items-end grow">
                   <Button 
                     color="primary" 
                     variant="solid"

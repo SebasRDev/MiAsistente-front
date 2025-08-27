@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
 
 @font-face {
   font-family: 'Trajan-pro';
@@ -76,7 +75,7 @@ input {
   align-items: center;
   flex-direction: column;
   gap: 24px;
-  height: calc(100dvh - 65px);
+  height: 100dvh;
   background-image: url('/assets/login_bg.webp');
   background-size: cover;
   background-repeat: no-repeat;

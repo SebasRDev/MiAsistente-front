@@ -1,34 +1,27 @@
-/* eslint-disable react/no-children-prop */
+ 
 
 'use client'
 
+import { useUser, useClerk, UserButton } from "@clerk/nextjs";
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
 import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconPencilCheck } from "@tabler/icons-react";
-import { getApp } from "firebase/app";
-import { doc, getFirestore } from "firebase/firestore";
 import Image from "next/image";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, CSSProperties } from "react";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
-import { useDocumentData } from "react-firebase-hooks/firestore";
 
 import { useQuote } from "@/context/QuoteContext";
-import { removeSession } from "@/utils/firebase/auth-actions";
-import { firebaseAuth } from "@/utils/firebase/config";
 
-// Inicializar Firestore
-const db = getFirestore(getApp());
-
-
-const Header = ({ session }: { session: string | null }) => {
-  // Usar useDocumentData para obtener los datos del usuario desde Firestore
+const Header = () => {
   const router = useRouter();
-  const [signOut] = useSignOut(firebaseAuth);
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [user] = useAuthState(firebaseAuth);
+  
+  const pathName = usePathname();
+  const isWaitingRoom = pathName.includes('waiting-room');
 
   useEffect(() => {
     if (state.segment === 'quote') {
@@ -38,25 +31,29 @@ const Header = ({ session }: { session: string | null }) => {
     }
   }, [state.segment]);
 
-  const [firestoreUserData] = useDocumentData(
-    user ? doc(db, 'users', user.uid) : null
-  );
-  const pathName = usePathname();
-  const isWaitingRoom = pathName.includes('waiting-room');
-
-  const userData = state.user;
-
   useEffect(() => {
-    if (!user || !session) {
+    if (!user && isLoaded) {
       dispatch({ type: 'CLEAR_USER' });
     }
 
-    if (user && session) {
-      if (!state.user) {
-        dispatch({ type: 'SET_USER', payload: firestoreUserData });
+    if (user && isLoaded) {
+      // Crear objeto de usuario basado en Clerk
+      const clerkUserData = {
+        uid: user.id,
+        email: user.emailAddresses[0]?.emailAddress || '',
+        name: user.firstName || '',
+        lastName: user.lastName || '',
+        avatar: user.imageUrl || '',
+        role: user.publicMetadata.role as string || 'profesional',
+        approved: user.publicMetadata.status === 'active',
+        isProfileComplete: user.publicMetadata.isProfileComplete as boolean || false,
+      };
+
+      if (!state.user || state.user.uid !== user.id) {
+        dispatch({ type: 'SET_USER', payload: clerkUserData });
       }
     }
-  }, [user, dispatch, firestoreUserData, session]);
+  }, [user, isLoaded, dispatch, state.user]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
@@ -72,45 +69,85 @@ const Header = ({ session }: { session: string | null }) => {
   const handleLogout = async () => {
     try {
       dispatch({ type: 'CLEAR_USER' });
-      await removeSession();
-      await signOut();
+      await signOut(() => router.push('/'));
     } catch (error) {
       console.error('Error durante logout:', error);
-    } finally {
-      redirect('/');
     }
   };
+
+  // Obtener datos del usuario desde el state o directamente de Clerk
+  const userData = state.user || (user && isLoaded ? {
+    uid: user.id,
+    email: user.emailAddresses[0]?.emailAddress || '',
+    name: user.firstName || '',
+    lastName: user.lastName || '',
+    avatar: user.imageUrl || '',
+    role: user.publicMetadata.role as string || 'profesional',
+    approved: user.publicMetadata.status === 'active',
+    isProfileComplete: user.publicMetadata.isProfileComplete as boolean || false,
+  } : null);
+
+  // Obtener rol del usuario
+  const userRole = user?.publicMetadata.role as string || userData?.role || 'profesional';
+
+  if (!isLoaded) {
+    return null; // O un skeleton/loading component
+  }
 
   return (
     <>
       <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
         <NavbarContent className="gap-0">
-          {userData && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
-            <IconMenu2 stroke={2} />
-          </Button>}
+          {userData && !isWaitingRoom && (
+            <Button 
+              isIconOnly 
+              aria-label={isOpen ? "Close menu" : "Open menu"} 
+              onPress={onOpen} 
+              variant="light"
+            >
+              <IconMenu2 stroke={2} />
+            </Button>
+          )}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {userData && !isWaitingRoom && <NavbarContent justify="center">
-          <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
-        </NavbarContent>}
-        {userData && !isWaitingRoom && <NavbarContent justify="end">
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Avatar className="cursor-pointer" isBordered src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Acciones de usuario" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Hola! {state.user?.name}</p>
-                <p className="font-semibold">{userData.email}</p>
-              </DropdownItem>
-              <DropdownItem key="settings" onPress={() => router.push('/perfil')}>Editar Perfil</DropdownItem>
-              <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
-                Cerrar Sesión
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </NavbarContent>}
+        
+        {userData && !isWaitingRoom && (
+          <NavbarContent justify="center">
+            <h1 className="text-md md:text-xl font-Trajan-pro-bold">
+              {state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}
+            </h1>
+          </NavbarContent>
+        )}
+        
+        {userData && !isWaitingRoom && (
+          <NavbarContent justify="end">
+            {/* <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar 
+                  className="cursor-pointer" 
+                  isBordered 
+                  src={userData.avatar || user?.imageUrl} 
+                  alt={`${userData.name} ${userData.lastName}`} 
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Acciones de usuario" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Hola! {userData.name}</p>
+                  <p className="font-semibold">{userData.email}</p>
+                </DropdownItem>
+                <DropdownItem key="settings" onPress={() => router.push('/perfil')}>
+                  Editar Perfil
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
+                  Cerrar Sesión
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown> */}
+            <UserButton />
+          </NavbarContent>
+        )}
       </Navbar>
+      
       <Drawer
         isOpen={isOpen}
         size="xs"
@@ -123,9 +160,10 @@ const Header = ({ session }: { session: string | null }) => {
           {() => (
             <>
               <DrawerBody className="pt-16">
-                <Listbox>
-                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
-                    {['admin', 'asesor'].includes(userData?.role) ? (
+                <Listbox aria-label="menu">
+                  <ListboxSection showDivider={userRole === 'admin'} title="Configuración">
+                    {/* Cotizador - Solo para admin y asesor */}
+                    {['admin', 'asesor'].includes(userRole) && (
                       <ListboxItem
                         key="quote"
                         className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -139,7 +177,9 @@ const Header = ({ session }: { session: string | null }) => {
                       >
                         Cotizador
                       </ListboxItem>
-                    ) : null}
+                    )}
+                    
+                    {/* Formulador - Para todos los usuarios activos */}
                     <ListboxItem
                       key="formula"
                       className={state.segment === 'formula' ? 'text-primary' : ''}
@@ -153,6 +193,8 @@ const Header = ({ session }: { session: string | null }) => {
                     >
                       Formulador
                     </ListboxItem>
+                    
+                    {/* Lista de precios */}
                     <ListboxItem
                       key="price-list"
                       description="Lista de precios virtual"
@@ -168,6 +210,8 @@ const Header = ({ session }: { session: string | null }) => {
                     >
                       Lista de precios
                     </ListboxItem>
+                    
+                    {/* Catálogo público */}
                     <ListboxItem
                       key="public-catalog"
                       description="Catalogo público"
@@ -184,6 +228,7 @@ const Header = ({ session }: { session: string | null }) => {
                       Catalogo público
                     </ListboxItem>
                     
+                    {/* Reset */}
                     <ListboxItem
                       key="reset"
                       className="text-danger"
@@ -195,27 +240,30 @@ const Header = ({ session }: { session: string | null }) => {
                       }
                       onPress={handleReset}
                     >
-                      Restableces Valores
+                      Restablecer Valores
                     </ListboxItem>
                   </ListboxSection>
-                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
-                    <ListboxItem
-                      key="users"
-                      description="Panel de administración de usuarios"
-                      startContent={
-                        <div className="pointer-events-none flex items-center">
-                          <IconUsers stroke={2} />
-                        </div>
-                      }
-                      onPress={() => {
-                        onClose();
-                        router.push('/admin/usuarios')
-                      }
-                      }
-                    >
-                      Administrar Usuarios
-                    </ListboxItem>
-                  </ListboxSection>) : null}
+                  
+                  {/* Sección de administración - Solo para admins */}
+                  {userRole === 'admin' && (
+                    <ListboxSection title="Administración">
+                      <ListboxItem
+                        key="users"
+                        description="Panel de administración de usuarios"
+                        startContent={
+                          <div className="pointer-events-none flex items-center">
+                            <IconUsers stroke={2} />
+                          </div>
+                        }
+                        onPress={() => {
+                          onClose();
+                          router.push('/admin/usuarios')
+                        }}
+                      >
+                        Administrar Usuarios
+                      </ListboxItem>
+                    </ListboxSection>
+                  )}
                 </Listbox>
               </DrawerBody>
             </>

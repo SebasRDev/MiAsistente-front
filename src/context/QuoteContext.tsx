@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, PropsWithChildren, useEffect } from 'react';
 
 import { QuoteAction, QuoteState } from '@/types/quote';
 
@@ -149,7 +149,7 @@ function quoteReducer(state: QuoteState, action: QuoteAction): QuoteState {
 }
 
 
-export function QuoteProvider({ children }: { children: ReactNode }) {
+export function QuoteProvider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(quoteReducer, defaultState);
 
   useEffect(() => {

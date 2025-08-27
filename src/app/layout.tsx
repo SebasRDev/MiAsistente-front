@@ -1,3 +1,5 @@
+import { esMX } from '@clerk/localizations'
+import { ClerkProvider, SignedIn } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -8,6 +10,7 @@ import { Toaster } from "sonner";
 import { Providers } from "@/app/providers";
 import Header from "@/components/common/header/Header";
 import NavigationFooter from "@/components/common/navigationFooter/NavigationFooter";
+
 
 
 const geistSans = Geist({
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
     icon: "/favicon-196.png",
     apple: "/apple-icon-180.png",
   },
-  themeColor: "#658864",
+  // themeColor: "#658864",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -203,20 +206,26 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const sessionCookie = (await cookieStore).get('user-session');
   const session = sessionCookie?.value || null;
   return (
-    <html lang="en">
-      <body
-        aria-label="Mi asistente SkinHealth"
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh formula`}
-      >
-        <Providers>
-          <Toaster richColors position="top-right" />
-          <Header session={session} />
-          <main className="text-foreground relative z-[1]">
-            {children}
-          </main>
-          <NavigationFooter />
-        </Providers>
-      </body>
-    </html>
+    <ClerkProvider localization={esMX}>
+      <html lang="en">
+        <body
+          aria-label="Mi asistente SkinHealth"
+          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh formula`}
+        >
+            <Providers>
+              <Toaster richColors position="top-right" />
+              <SignedIn>
+                <Header />
+              </SignedIn>
+              <main className="text-foreground relative z-1">
+                {children}
+              </main>
+              <SignedIn>
+                <NavigationFooter />
+              </SignedIn>
+            </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

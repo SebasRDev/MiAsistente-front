@@ -59,7 +59,7 @@ const PriceListContent = () => {
       />
       <div className="flex flex-col lg:flex-row lg:flex-wrap gap-5">
         {filteredProducts?.map((product: Product) => (
-          <div key={product.id} className="flex gap-4 items-cente border border-primary rounded-md backdrop-blur-sm saturate-150 p-4 w-full lg:w-[calc(50%_-_10px)]">
+          <div key={product.id} className="flex gap-4 items-cente border border-primary rounded-md backdrop-blur-sm saturate-150 p-4 w-full lg:w-[calc(50%-10px)]">
             <div className="flex flex-col">
               <div className="flex gap-2 mb-2 flex-wrap">
                 <Chip variant="flat" classNames={{
@@ -67,7 +67,7 @@ const PriceListContent = () => {
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}>{product.publicPrice ? 'USO EN CASA' : 'USO EN CABINA'}</Chip>
                 {product?.category !== null && <Chip variant="flat" classNames={{
-                    base: "bg-gradient-to-br from-lime-800/40 to-green-900/40 rounded-md",
+                    base: "bg-linear-to-br from-lime-800/40 to-green-900/40 rounded-md",
                     content: "drop-shadow shadow-black text-white text-sm",
                   }}
                 >

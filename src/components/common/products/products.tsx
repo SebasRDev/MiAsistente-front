@@ -89,7 +89,7 @@ const Products = () => {
             <DrawerBody className="bg-cream">
               <div className="flex justify-end relative">
                 {bondades?.image &&
-                  <div className="w-[65%] flex-shrink-0 block">
+                  <div className="w-[65%] shrink-0 block">
                     <motion.img
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -101,7 +101,7 @@ const Products = () => {
                   </div>
                 }
                 <motion.div
-                  className="flex flex-col gap-4 pb-10 pt-10 flex-shrink-0 max-w-[35%]"
+                  className="flex flex-col gap-4 pb-10 pt-10 shrink-0 max-w-[35%]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}

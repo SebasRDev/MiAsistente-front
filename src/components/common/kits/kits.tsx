@@ -124,9 +124,9 @@ const Kits = () => {
                           transition={{ duration: 0.3, delay: 0.1 + (index * 0.05) }}
                         >
                           {kit.category === 'CABINA' && <p className="text-md font-bold text-primary">{quantity}</p>}
-                          <p className="flex-grow">{product.name}</p>
+                          <p className="grow">{product.name}</p>
                           <motion.div
-                            className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center flex-shrink-0"
+                            className="rounded-full bg-primary text-white w-8 h-8 flex items-center justify-center shrink-0"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 + (index * 0.05) }}
