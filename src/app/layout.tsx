@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { cookies } from "next/headers";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 
@@ -198,10 +197,7 @@ export const viewport: Viewport = {
   // interactiveWidget: 'resizes-visual',
 }
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const cookieStore = cookies();
-  const sessionCookie = (await cookieStore).get('user-session');
-  const session = sessionCookie?.value || null;
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body
@@ -210,7 +206,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       >
         <Providers>
           <Toaster richColors position="top-right" />
-          <Header session={session} />
+          <Header />
           <main className="text-foreground relative z-[1]">
             {children}
           </main>
