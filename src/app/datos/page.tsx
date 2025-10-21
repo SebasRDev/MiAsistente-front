@@ -2,6 +2,7 @@
 import { Input, Textarea } from "@heroui/react";
 import { useEffect } from "react";
 
+import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 
 export type FieldName = 'client' | 'phone' | 'id' | 'gift' | 'profesional' | 'recommendations' | 'campaign' | 'city';
@@ -60,10 +61,11 @@ const fields: Field[] = [
 
 export default function Datos() {
   const { state, dispatch } = useQuote();
+  const { profile } = useAuth();
 
   useEffect(() => {
-    if (state.user) {
-      const fullName = `${state.user.name} ${state.user.lastName}`.trim();
+    if (profile) {
+      const fullName = `${profile.name} ${profile.lastName}`.trim();
       if (fullName && (!state.quote.profesional || state.quote.profesional === '')) {
         dispatch({
           type: 'SET_CLIENT_INFO',
@@ -71,7 +73,7 @@ export default function Datos() {
         });
       }
     }
-  }, [state.user, state.segment]);
+  }, [profile, state.segment, state.quote.profesional, dispatch]);
 
   const handleChange = (value: string, field: FieldName) => {
     dispatch({

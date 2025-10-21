@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDocument } from "react-firebase-hooks/firestore";
 
-import { useQuote } from "@/context/QuoteContext"
+import { useAuth } from "@/context/AuthContext"
 
 export default function  WaitingRoom() {
-  const { state } = useQuote();
+  const { user } = useAuth();
   const router = useRouter();
   // Only create the document reference if we have a user
-  const userDocRef = state.user?.uid 
-    ? doc(getFirestore(getApp()), 'users', state.user.uid)
+  const userDocRef = user?.uid
+    ? doc(getFirestore(getApp()), 'users', user.uid)
     : null;
   
   // Only use the hook if we have a valid reference

@@ -5,30 +5,27 @@
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
-import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconPencilCheck } from "@tabler/icons-react";
-import { getApp } from "firebase/app";
-import { doc, getFirestore } from "firebase/firestore";
+import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook } from "@tabler/icons-react";
 import Image from "next/image";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, CSSProperties } from "react";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
-import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useSignOut } from "react-firebase-hooks/auth";
 
+import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 import { removeSession } from "@/utils/firebase/auth-actions";
 import { firebaseAuth } from "@/utils/firebase/config";
 
-// Inicializar Firestore
-const db = getFirestore(getApp());
 
-
-const Header = ({ session }: { session: string | null }) => {
-  // Usar useDocumentData para obtener los datos del usuario desde Firestore
+const Header = () => {
   const router = useRouter();
   const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [user] = useAuthState(firebaseAuth);
+  const { user, profile, loading } = useAuth();
+
+  const pathName = usePathname();
+  const isWaitingRoom = pathName.includes('waiting-room');
 
   useEffect(() => {
     if (state.segment === 'quote') {
@@ -37,26 +34,6 @@ const Header = ({ session }: { session: string | null }) => {
       document.body.classList.add('formula');
     }
   }, [state.segment]);
-
-  const [firestoreUserData] = useDocumentData(
-    user ? doc(db, 'users', user.uid) : null
-  );
-  const pathName = usePathname();
-  const isWaitingRoom = pathName.includes('waiting-room');
-
-  const userData = state.user;
-
-  useEffect(() => {
-    if (!user || !session) {
-      dispatch({ type: 'CLEAR_USER' });
-    }
-
-    if (user && session) {
-      if (!state.user) {
-        dispatch({ type: 'SET_USER', payload: firestoreUserData });
-      }
-    }
-  }, [user, dispatch, firestoreUserData, session]);
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
@@ -71,7 +48,6 @@ const Header = ({ session }: { session: string | null }) => {
 
   const handleLogout = async () => {
     try {
-      dispatch({ type: 'CLEAR_USER' });
       await removeSession();
       await signOut();
     } catch (error) {
@@ -81,27 +57,38 @@ const Header = ({ session }: { session: string | null }) => {
     }
   };
 
+  // Loading state - show minimal navbar
+  if (loading) {
+    return (
+      <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
+        <NavbarContent className="gap-0">
+          <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
+        </NavbarContent>
+      </Navbar>
+    );
+  }
+
   return (
     <>
       <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
         <NavbarContent className="gap-0">
-          {userData && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+          {profile && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
             <IconMenu2 stroke={2} />
           </Button>}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {userData && !isWaitingRoom && <NavbarContent justify="center">
+        {profile && !isWaitingRoom && <NavbarContent justify="center">
           <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
-        {userData && !isWaitingRoom && <NavbarContent justify="end">
+        {profile && !isWaitingRoom && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
-              <Avatar className="cursor-pointer" isBordered src={state.user?.avatar} alt={`${state.user?.name} ${state.user?.lastName}`} />
+              <Avatar className="cursor-pointer" isBordered src={profile.avatar || undefined} alt={`${profile.name} ${profile.lastName}`} />
             </DropdownTrigger>
             <DropdownMenu aria-label="Acciones de usuario" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Hola! {state.user?.name}</p>
-                <p className="font-semibold">{userData.email}</p>
+                <p className="font-semibold">Hola! {profile.name}</p>
+                <p className="font-semibold">{profile.email}</p>
               </DropdownItem>
               <DropdownItem key="settings" onPress={() => router.push('/perfil')}>Editar Perfil</DropdownItem>
               <DropdownItem key="logout" color="danger" className="text-danger" onPress={handleLogout}>
@@ -124,8 +111,8 @@ const Header = ({ session }: { session: string | null }) => {
             <>
               <DrawerBody className="pt-16">
                 <Listbox>
-                  <ListboxSection showDivider={userData?.role === 'admin'} title="Configuración">
-                    {['admin', 'asesor'].includes(userData?.role) ? (
+                  <ListboxSection showDivider={profile?.role === 'admin'} title="Configuración">
+                    {['admin', 'asesor'].includes(profile?.role || '') ? (
                       <ListboxItem
                         key="quote"
                         className={state.segment === 'quote' ? 'text-primary' : ''}
@@ -198,7 +185,7 @@ const Header = ({ session }: { session: string | null }) => {
                       Restableces Valores
                     </ListboxItem>
                   </ListboxSection>
-                  {userData?.role === 'admin' ? (<ListboxSection title="Administración">
+                  {profile?.role === 'admin' ? (<ListboxSection title="Administración">
                     <ListboxItem
                       key="users"
                       description="Panel de administración de usuarios"

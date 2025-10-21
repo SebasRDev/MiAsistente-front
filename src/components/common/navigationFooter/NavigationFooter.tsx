@@ -7,10 +7,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { KitsIcon } from "@/components/common/icons/icons";
+import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 
 const NavigationFooter = () => {
   const { state } = useQuote();
+  const { profile } = useAuth();
   const pathname = usePathname();
   const [pdfLoading, setPdfLoading] = useState(false);
   const [downloadValue, setDownloadValue] = useState(0);
@@ -246,7 +248,7 @@ const NavigationFooter = () => {
 
   return (
     <>
-      {state.user && !isWaitingRoom && <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 overflow-hidden">
+      {profile && !isWaitingRoom && <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 overflow-hidden">
         <div className="grid h-full max-w-lg grid-cols-6 mx-auto">
           <Link
             href="/datos"

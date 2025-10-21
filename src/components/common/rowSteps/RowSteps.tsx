@@ -10,7 +10,7 @@ import type {ComponentProps} from "react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { useQuote } from "@/context/QuoteContext";
+import { useAuth } from "@/context/AuthContext";
 
 export type RowStepProps = {
   title?: React.ReactNode;
@@ -180,7 +180,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
     },
     ref,
   ) => {
-    const { state, dispatch } = useQuote();
+    const { user, profile } = useAuth();
     const [currentStep, setCurrentStep] = useControlledState(
       currentStepProp,
       defaultStep,
@@ -196,26 +196,26 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       nit: '',
       centerName: '',
     });
-    
+
     // Define proper types for errors and touchedFields
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
-    
-    // Add null check for state.user
+
+    // Load profile data when available
     useEffect(() => {
-      if (state?.user) {
+      if (profile) {
         setProfileData({
-          name: state.user.name || '',
-          lastName: state.user.lastName || '',
-          graduate: state.user.egresado || '',
-          profession: state.user.profesion || '',
-          id: state.user.id || '',
-          phone: state.user.phone || '',
-          nit: state.user.nit || '',
-          centerName: state.user.centerName || '',
+          name: profile.name || '',
+          lastName: profile.lastName || '',
+          graduate: (profile as any).egresado || '',
+          profession: (profile as any).profesion || '',
+          id: (profile as any).id || '',
+          phone: (profile as any).phone || '',
+          nit: (profile as any).nit || '',
+          centerName: (profile as any).centerName || '',
         });
       }
-    }, [state?.user]);
+    }, [profile]);
 
     const colors = React.useMemo(() => {
       let userColor;
@@ -349,30 +349,28 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
       } else {
         // Valida los campos del paso 2 antes de guardar
         const isStepValid = validateFields(2);
-        
-        if (isStepValid && state?.user) {
+
+        if (isStepValid && user) {
           try {
             const updatedUserData = {
-              ...state.user,
               ...profileData,
               isProfileComplete: true
             };
-            dispatch({ type: 'SET_USER', payload: updatedUserData });
             const db = getFirestore(getApp());
-            const userDocRef = doc(db, 'users', state.user.uid);
+            const userDocRef = doc(db, 'users', user.uid);
             await setDoc(userDocRef, updatedUserData, { merge: true });
             toast.success('Información actualizada con éxito');
           } catch (error) {
             console.error('Error al guardar tu información:', error);
             toast.error('Ocurrió un error al guardar tú información');
           }
-        } else if (!state?.user) {
+        } else if (!user) {
           toast.error('Usuario no disponible');
         } else {
           const invalidFields = fields
             .filter(field => field.step === 2 && field.required && errors[field.name])
             .map(field => field.label);
-          
+
           if (invalidFields.length > 0) {
             toast.error(`Por favor complete los campos requeridos: ${invalidFields.join(', ')}`);
           }

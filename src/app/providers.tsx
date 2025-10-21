@@ -3,16 +3,13 @@
 
 import { HeroUIProvider } from "@heroui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { type ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { getQueryClient } from "@/app/get-query-client";
+import { AuthProvider } from "@/context/AuthContext";
 import { QuoteProvider } from "@/context/QuoteContext";
 
-interface ProvidersProps {
-  children: ReactNode;
-}
-
-export function Providers({ children }: ProvidersProps) {
+export function Providers({ children }: PropsWithChildren) {
   const queryClient = getQueryClient();
 
   return (
@@ -20,11 +17,13 @@ export function Providers({ children }: ProvidersProps) {
       locale="es-ES"
       reducedMotion="user"
     >
-      <QuoteProvider>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </QuoteProvider>
+      <AuthProvider>
+        <QuoteProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </QuoteProvider>
+      </AuthProvider>
     </HeroUIProvider>
   );
 }

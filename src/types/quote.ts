@@ -33,7 +33,6 @@ export interface QuoteState {
   };
   kit: string;
   products: Product[];
-  user: DocumentData | undefined;
 }
 
 export type QuoteAction =
@@ -54,6 +53,4 @@ export type QuoteAction =
     }
   | { type: 'REMOVE_PRODUCT'; instanceId?: string; payload: string }
   | { type: 'RESET_QUOTE' }
-  | { type: 'LOAD_SAVED_STATE'; payload: QuoteState }
-  | { type: 'SET_USER'; payload: DocumentData | undefined }
-  | { type: 'CLEAR_USER' };
+  | { type: 'LOAD_SAVED_STATE'; payload: QuoteState };
