@@ -8,8 +8,9 @@ export async function createSession(userId: string) {
   // Almacenamos el ID del usuario como la sesión
   // No almacenamos el idToken completo por seguridad
   cookieStore.set('user-session', userId, {
-    httpOnly: true,
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24, // 24 horas
     path: '/',
   });

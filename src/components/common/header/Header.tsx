@@ -22,7 +22,7 @@ const Header = () => {
   const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, sessionId } = useAuth();
 
   const pathName = usePathname();
   const isWaitingRoom = pathName.includes('waiting-room');
@@ -34,6 +34,9 @@ const Header = () => {
       document.body.classList.add('formula');
     }
   }, [state.segment]);
+
+  const isAuthenticated = user && profile;
+  const shouldShowFullHeader = isAuthenticated && !isWaitingRoom;
 
   const handleSegmentChange = (segment: 'formula' | 'quote') => {
     dispatch({ type: 'SET_SEGMENT', payload: segment });
@@ -57,30 +60,21 @@ const Header = () => {
     }
   };
 
-  // Loading state - show minimal navbar
-  if (loading) {
-    return (
-      <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
-        <NavbarContent className="gap-0">
-          <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
-        </NavbarContent>
-      </Navbar>
-    );
-  }
-
   return (
     <>
       <Navbar isBordered style={{ "--tw-backdrop-blur": "blur(4px)", "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as CSSProperties}>
         <NavbarContent className="gap-0">
-          {profile && !isWaitingRoom && <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
-            <IconMenu2 stroke={2} />
-          </Button>}
+          {shouldShowFullHeader && (
+            <Button isIconOnly aria-label={isOpen ? "Close menu" : "Open menu"} onPress={onOpen} variant="light">
+              <IconMenu2 stroke={2} />
+            </Button>
+          )}
           <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
         </NavbarContent>
-        {profile && !isWaitingRoom && <NavbarContent justify="center">
+        {shouldShowFullHeader && <NavbarContent justify="center">
           <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
         </NavbarContent>}
-        {profile && !isWaitingRoom && <NavbarContent justify="end">
+        {shouldShowFullHeader && <NavbarContent justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar className="cursor-pointer" isBordered src={profile.avatar || undefined} alt={`${profile.name} ${profile.lastName}`} />
@@ -98,7 +92,7 @@ const Header = () => {
           </Dropdown>
         </NavbarContent>}
       </Navbar>
-      <Drawer
+      {shouldShowFullHeader && (<Drawer
         isOpen={isOpen}
         size="xs"
         onClose={onClose}
@@ -208,7 +202,7 @@ const Header = () => {
             </>
           )}
         </DrawerContent>
-      </Drawer>
+      </Drawer>)}
     </>
   )
 }
