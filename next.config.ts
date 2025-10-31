@@ -1,4 +1,9 @@
+import { createRequire } from "module";
+
 import type { NextConfig } from 'next';
+
+const require = createRequire(import.meta.url);
+const packageJson = require("./package.json");
 
 const nextConfig: NextConfig = {
   crossOrigin: 'anonymous',
@@ -12,6 +17,9 @@ const nextConfig: NextConfig = {
         hostname: 'res.cloudinary.com',
       },
     ],
+  },
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
 };
 
