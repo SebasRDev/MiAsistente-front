@@ -3,11 +3,11 @@
 import { getApp } from 'firebase/app';
 import { User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import React, { createContext, useContext, useEffect, useState, PropsWithChildren } from 'react';
+import { usePathname } from 'next/navigation';
+import { createContext, useContext, useEffect, useState, PropsWithChildren } from 'react';
 
 import { User } from '@/types/user';
 import { firebaseAuth } from '@/utils/firebase/config';
-import { usePathname } from 'next/navigation';
 
 /**
  * Extended user profile from Firestore
@@ -60,6 +60,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sessionCookie, setSessionCookie] = useState<string | null>(() => {
+    if (typeof window === 'undefined') {
+      return null; // En el servidor, retornamos null
+    }
     const cookies = document.cookie.split(';');
     const cookieValue = cookies.find((cookie) => cookie.trim().startsWith('user-session='));
     return cookieValue?.split('=')[1] || null;
