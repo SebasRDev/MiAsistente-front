@@ -61,19 +61,23 @@ const fields: Field[] = [
 
 export default function Datos() {
   const { state, dispatch } = useQuote();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
 
   useEffect(() => {
-    if (profile) {
-      const fullName = `${profile.name} ${profile.lastName}`.trim();
-      if (fullName && (!state.quote.profesional || state.quote.profesional === '')) {
-        dispatch({
-          type: 'SET_CLIENT_INFO',
-          payload: { field: 'profesional', value: fullName }
-        });
-      }
+  if (profile) {
+    // Usar displayName de Firebase Auth como fallback
+    const name = profile.name || user?.displayName?.split(' ')[0] || '';
+    const lastName = profile.lastName || user?.displayName?.split(' ').slice(1).join(' ') || '';
+    const fullName = `${name} ${lastName}`.trim();
+    
+    if (fullName && (!state.quote.profesional || state.quote.profesional === '')) {
+      dispatch({
+        type: 'SET_CLIENT_INFO',
+        payload: { field: 'profesional', value: fullName }
+      });
     }
-  }, [profile, state.segment, state.quote.profesional, dispatch]);
+  }
+}, [profile, user, state.segment, state.quote.profesional, dispatch]);
 
   const handleChange = (value: string, field: FieldName) => {
     dispatch({
