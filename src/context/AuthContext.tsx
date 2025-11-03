@@ -105,7 +105,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
               setProfile({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                // ... (resto de tus datos de perfil)
+                name: data.name,
+                lastName: data.lastName,
+                avatar: data.avatar,
                 role: data.role || 'profesional',
                 approved: data.approved ?? false,
                 isProfileComplete: data.isProfileComplete ?? false,
