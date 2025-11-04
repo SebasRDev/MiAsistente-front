@@ -61,14 +61,14 @@ export const BugReportModal = ({ isOpen, onClose }: BugReportModalProps) => {
       if (notificationResult.success) {
         toast.success('✅ Bug reportado con éxito. ¡Gracias por tu ayuda!');
       } else {
-        toast.warning('⚠️ Bug guardado pero falló la notificación:', notificationResult.error);
+        toast.warning(`⚠️ Bug guardado pero falló la notificación: ${notificationResult.error}`);
       }
       
       setMessage('');
       onClose();
       
     } catch (error) {
-      toast.error('❌ Error al reportar bug: '+ error);
+      toast.error(`❌ Error al reportar bug: ${error}`);
     } finally {
       setIsSubmitting(false);
     }
