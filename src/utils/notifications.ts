@@ -1,6 +1,6 @@
 // utils/notifications.ts
 export const sendAdvancedDiscordNotification = async (bugReport: any) => {
-  const DISCORD_WEBHOOK_URL = process.env.NEXT_PUBLIC_REPORT_SERVER;
+  const DISCORD_WEBHOOK_URL = process.env.REPORT_SERVER;
   try {
     // Crear un ID único para el reporte
     const reportId = `bug_${bugReport.firestoreId || Date.now()}`;
