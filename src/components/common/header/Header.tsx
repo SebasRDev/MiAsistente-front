@@ -1,16 +1,17 @@
-/* eslint-disable react/no-children-prop */
+ 
 
 'use client'
 
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
-import { Avatar, Drawer, DrawerBody, DrawerContent, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
-import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook } from "@tabler/icons-react";
+import { Avatar, Drawer, DrawerBody, DrawerContent, DrawerFooter, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
+import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconBug } from "@tabler/icons-react";
 import Image from "next/image";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, CSSProperties } from "react";
 import { useSignOut } from "react-firebase-hooks/auth";
 
+import { BugReportModal } from "@/components/common/modals/BugReportModal";
 import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 import { removeSession } from "@/utils/firebase/auth-actions";
@@ -22,6 +23,8 @@ const Header = () => {
   const [signOut] = useSignOut(firebaseAuth);
   const { state, dispatch } = useQuote();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isBugModalOpen, onOpen: onBugModalOpen, onClose: onBugModalClose } = useDisclosure();
+
   const { user, profile, loading, sessionId } = useAuth();
 
   const pathName = usePathname();
@@ -199,10 +202,37 @@ const Header = () => {
                   </ListboxSection>) : null}
                 </Listbox>
               </DrawerBody>
+              <DrawerFooter>
+                <Listbox>
+                  <ListboxSection title="Soporte">
+                    <ListboxItem
+                      key="bug-report"
+                      className="text-danger" 
+                      color="danger"
+                      startContent={
+                        <div className="pointer-events-none flex items-center">
+                          <IconBug stroke={2} />
+                        </div>
+                      }
+                      onPress={() => {
+                        onClose(); // Cerrar el drawer
+                        onBugModalOpen(); // Abrir el modal de bug report
+                      }}
+                    >
+                      Reportar un Error
+                    </ListboxItem>
+                  </ListboxSection>
+                </Listbox>
+              </DrawerFooter>
             </>
           )}
         </DrawerContent>
       </Drawer>)}
+
+      <BugReportModal 
+        isOpen={isBugModalOpen} 
+        onClose={onBugModalClose} 
+      />
     </>
   )
 }
