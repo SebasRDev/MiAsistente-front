@@ -88,6 +88,7 @@ export const sendAdvancedDiscordNotification = async (bugReport: any) => {
     return { success: true, reportId };
     
   } catch (error) {
-    return { success: false, error: error.message };
+    const message = error instanceof Error ? error.message : String(error);
+    return { success: false, error: message };
   }
 };
