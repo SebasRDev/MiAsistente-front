@@ -5,9 +5,9 @@ import { IconChevronDown, IconTrashX } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
+import UploadModal from "@/app/admin/info/upload";
 import { productOptions } from "@/app/productos/product";
 import { Product } from "@/types/quote"
-import UploadModal from "@/app/admin/info/upload";
 
 
 const headerColumns = [
@@ -18,22 +18,24 @@ const headerColumns = [
   { name: "ACCIONES", uid: "actions" },
 ];
 
-const descriptionsMap = {
+type OptionKey = "products" | "kits";
+
+const descriptionsMap: Record<OptionKey, string> = {
   products: "Actualizar la lista de productos desde el archivo subido.",
   kits: "Actualizar la lista de kits desde el archivo subido.",
 };
 
-const labelsMap = {
+const labelsMap: Record<OptionKey, string> = {
   products: "Actualizar Productos",
   kits: "Actualizar Kits",
 };
 
 export default function AdminProductsPage() {
   const { data } = useSuspenseQuery(productOptions);
-  const [selectedOption, setSelectedOption] =  useState(new Set(["products"]));
+  const [selectedOption, setSelectedOption] = useState<Set<OptionKey>>(new Set<OptionKey>(["products"]));
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
-  const selectedOptionValue = Array.from(selectedOption)[0];
+  const selectedOptionValue: OptionKey = Array.from(selectedOption)[0];
 
   return(
     <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
@@ -52,7 +54,11 @@ export default function AdminProductsPage() {
             className="max-w-[300px]"
             selectedKeys={selectedOption}
             selectionMode="single"
-            onSelectionChange={setSelectedOption}
+            onSelectionChange={(keys) => {
+              const keyArray = Array.from(keys as Set<string>);
+              const filtered = keyArray.filter((k): k is OptionKey => k === 'products' || k === 'kits');
+              setSelectedOption(new Set(filtered));
+            }}
           >
             <DropdownItem key="products" description={descriptionsMap["products"]}>
               {labelsMap["products"]}

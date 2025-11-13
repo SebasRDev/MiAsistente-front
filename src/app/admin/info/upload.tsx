@@ -58,7 +58,7 @@ export default function UploadModal({option} : {option: string}) {
   return (
     <>
       <FilePond
-        files={files}
+        files={files.map(fileItem => fileItem.file)}
         onupdatefiles={(fileItems: FilePondFile[]) => setFiles(fileItems)}
         instantUpload={false}
         name="file"
