@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ReactNode } from "react";
+import { PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 
 import { Providers } from "@/app/providers";
@@ -197,7 +197,8 @@ export const viewport: Viewport = {
   // interactiveWidget: 'resizes-visual',
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body
