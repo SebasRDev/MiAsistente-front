@@ -80,7 +80,7 @@ export const BugReportModal = ({ isOpen, onClose }: BugReportModalProps) => {
       onClose={onClose}
       size="2xl"
       classNames={{
-        base: "bg-background",
+        base: "bg-white",
         header: "border-b border-divider",
         footer: "border-t border-divider",
       }}

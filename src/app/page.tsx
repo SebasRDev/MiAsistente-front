@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Form, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Form, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@heroui/react";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { getApp } from "firebase/app";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
@@ -125,6 +125,7 @@ export default function Home() {
   }
 
   const handleSignInGoogle = async () => {
+    setIsLoading(true);
     try {
       const result = await signInWithGoogle();
       const db = getFirestore(getApp());
@@ -198,6 +199,8 @@ export default function Home() {
     } catch (error) {
       console.error("Error real:", error);
       toast.error('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -205,6 +208,14 @@ export default function Home() {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4">
+            <Spinner size="lg" color="primary" />
+            <p className="text-white text-lg">Iniciando sesión...</p>
+          </div>
+        </div>
+      )}
       <div className="login-page">
         <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
           <Card isBlurred className="max-w-96 w-full shrink-0" style={{ "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
@@ -218,6 +229,7 @@ export default function Home() {
                 color="primary"
                 startContent={<Google />}
                 onPress={() => handleSignInGoogle()}
+                isLoading={isLoading}
               >
                 Ingresar con Google
               </Button>
