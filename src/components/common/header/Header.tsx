@@ -5,7 +5,7 @@
 import { Button } from "@heroui/button";
 import { Navbar, NavbarContent } from "@heroui/navbar"
 import { Avatar, Drawer, DrawerBody, DrawerContent, DrawerFooter, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Listbox, ListboxItem, ListboxSection, useDisclosure } from "@heroui/react";
-import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconBug } from "@tabler/icons-react";
+import { IconFileSpark, IconRefresh, IconFileDollar, IconMenu2, IconUsers, IconDeviceMobileDollar, IconBook, IconBug, IconVaccineBottle } from "@tabler/icons-react";
 import Image from "next/image";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, CSSProperties } from "react";
@@ -198,6 +198,22 @@ const Header = () => {
                       }
                     >
                       Administrar Usuarios
+                    </ListboxItem>
+                    <ListboxItem
+                      key="products"
+                      description="Panel de administración de productos y kits"
+                      startContent={
+                        <div className="pointer-events-none flex items-center">
+                          <IconVaccineBottle stroke={2} />
+                        </div>
+                      }
+                      onPress={() => {
+                        onClose();
+                        router.push('/admin/info')
+                      }
+                      }
+                    >
+                      Administrar Productos y kits
                     </ListboxItem>
                   </ListboxSection>) : null}
                 </Listbox>

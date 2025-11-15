@@ -41,10 +41,10 @@ export default function AdminProductsPage() {
     <div className="container max-w-6xl w-11/12 mx-auto py-7 pb-24">
 
       <ButtonGroup variant="flat" className="mb-4">
-        <Button onPress={onOpen}>{labelsMap[selectedOptionValue]}</Button>
+        <Button onPress={onOpen} className="bg-white">{labelsMap[selectedOptionValue]}</Button>
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
-            <Button isIconOnly>
+            <Button isIconOnly className="bg-white">
               <IconChevronDown stroke={2}/>
             </Button>
           </DropdownTrigger>
