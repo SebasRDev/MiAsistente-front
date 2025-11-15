@@ -20,6 +20,8 @@ const Usage = ({ time }: { time: string }) => {
       return <IconSun stroke={1} size={28} />
     case 'DIA O NOCHE':
     case 'DÍA O NOCHE':
+    case 'DÍA/NOCHE':
+    case 'DIA/NOCHE':
       return <IconSunMoon stroke={1} size={28} />
     case 'NOCHE':
       return <IconMoon stroke={1} size={28} />
