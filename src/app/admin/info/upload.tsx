@@ -1,4 +1,5 @@
 'use client';
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@heroui/react";
 import type { FilePondFile } from "filepond";
 import 'filepond/dist/filepond.min.css'
@@ -18,6 +19,7 @@ const translationsMap: Record<string, string> = {
 };
 
 export default function UploadModal({option} : {option: string}) {
+  const queryClient = useQueryClient();
   const [files, setFiles] = useState<FilePondFile[]>([])
   const [response, setResponse] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -41,6 +43,7 @@ export default function UploadModal({option} : {option: string}) {
         setResponse(data);
         console.log('Success:', data);
         toast.success(`${translationsMap[option]} actualizados correctamente.`);
+        queryClient.invalidateQueries({ queryKey: [option] });
       })
       .catch((error) => {
         console.error('Error:', error);
