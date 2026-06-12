@@ -21,9 +21,11 @@ import { firebaseAuth } from "@/utils/firebase/config";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [isTerms, setIsTerms] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [recoverPasswordEmail, setRecoverPasswordEmail] = useState('');
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -39,11 +41,15 @@ export default function Home() {
   const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 
   if (registerError) {
-    toast.error(translateAuthError(registerError.code));
+    const msg = translateAuthError(registerError.code);
+    toast.error(msg);
+    if (!authError) setAuthError(msg);
   }
 
   if (signInError) {
-    toast.error(translateAuthError(signInError.code));
+    const msg = translateAuthError(signInError.code);
+    toast.error(msg);
+    if (!authError) setAuthError(msg);
   }
 
   if (errorResetPassword) {
@@ -53,6 +59,7 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    setAuthError(null);
     setIsLoading(true);
 
     try {
@@ -63,10 +70,17 @@ export default function Home() {
       if (isLogin) {
         result = await signInWithEmailAndPassword(email, password);
       } else {
+        const confirmPassword = formData.get('confirm_password') as string;
+        if (password !== confirmPassword) {
+          const msg = 'Las contraseñas no coinciden';
+          setAuthError(msg);
+          toast.error(msg);
+          setIsLoading(false);
+          return;
+        }
         if (isTerms) {
           result = await createUserWithEmailAndPassword(email, password);
-        }
-        else {
+        } else {
           toast.error('Debes aceptar los términos y condiciones para registrarte');
         }
       }
@@ -132,53 +146,41 @@ export default function Home() {
       let userDocRef;
       if (result && result.user) {
         userDocRef = doc(db, 'users', result.user.uid);
-        if (result.user.photoURL) {
 
-          const userDoc = await getDoc(userDocRef);
+        const userDoc = await getDoc(userDocRef);
 
-          // Procesar displayName para obtener nombre y apellido
-          const displayName = result.user.displayName || '';
-          const nameParts = displayName.split(' ');
-          const firstName = nameParts[0] || '';
-          const lastName = nameParts.slice(1).join(' ') || '';
+        // Procesar displayName para obtener nombre y apellido
+        const displayName = result.user.displayName || '';
+        const nameParts = displayName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
 
-          if (!userDoc.exists()) {
-            // Si el usuario no existe, crear un documento nuevo
-            await setDoc(userDocRef, {
-              uid: result.user.uid,
-              email: result.user.email,
-              name: firstName,
-              lastName: lastName,
-              avatar: result.user.photoURL,
-              createdAt: new Date(),
-              approved: false,
-              isProfileComplete: false,
-              role: 'profesional' // Asignar rol por defecto
-            });
-          } else {
-            // Si el usuario existe, verificar qué campos necesitan actualizarse
-            const userData = userDoc.data();
-            const updates: any = {};
+        if (!userDoc.exists()) {
+          // Si el usuario no existe, crear un documento nuevo
+          await setDoc(userDocRef, {
+            uid: result.user.uid,
+            email: result.user.email,
+            name: firstName,
+            lastName: lastName,
+            avatar: result.user.photoURL || null,
+            createdAt: new Date(),
+            approved: false,
+            isProfileComplete: false,
+            role: 'profesional'
+          });
+        } else {
+          // Si el usuario existe, actualizar solo los campos que cambiaron
+          const userData = userDoc.data();
+          const updates: any = {};
 
-            // Verificar si el avatar ha cambiado
-            if (!userData.avatar || userData.avatar !== result.user.photoURL) {
-              updates.avatar = result.user.photoURL;
-            }
+          if (result.user.photoURL && userData.avatar !== result.user.photoURL) {
+            updates.avatar = result.user.photoURL;
+          }
+          if (!userData.name && firstName) updates.name = firstName;
+          if (!userData.lastName && lastName) updates.lastName = lastName;
 
-            // Verificar si el nombre ha cambiado
-            if (!userData.name || userData.name !== firstName) {
-              updates.name = firstName;
-            }
-
-            // Verificar si el apellido ha cambiado
-            if (!userData.lastName || userData.lastName !== lastName) {
-              updates.lastName = lastName;
-            }
-
-            // Solo actualizar si hay cambios
-            if (Object.keys(updates).length > 0) {
-              await setDoc(userDocRef, updates, { merge: true });
-            }
+          if (Object.keys(updates).length > 0) {
+            await setDoc(userDocRef, updates, { merge: true });
           }
         }
 
@@ -205,6 +207,7 @@ export default function Home() {
   }
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const toggleVisibilityConfirm = () => setIsVisibleConfirm(!isVisibleConfirm);
 
   return (
     <>
@@ -220,7 +223,7 @@ export default function Home() {
         <div className="container max-w-6xl w-11/12 mx-auto flex justify-end">
           <Card isBlurred className="max-w-96 w-full shrink-0" style={{ "WebkitBackdropFilter": "blur(16px) saturate(1.5)" } as React.CSSProperties}>
             <CardHeader>
-              <p className="text-white text-center text-2xl">Mi Asistente SkinHealth</p>
+              <h1 className="text-white text-center text-2xl w-full">Mi Asistente SkinHealth</h1>
             </CardHeader>
             <CardBody>
               <Button
@@ -242,9 +245,10 @@ export default function Home() {
                   type="email"
                 />
                 <Input
+                  isRequired
                   endContent={
                     <button
-                      aria-label="toggle password visibility"
+                      aria-label={isVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
                       className="focus:outline-none"
                       type="button"
                       onClick={toggleVisibility}
@@ -262,14 +266,15 @@ export default function Home() {
                   type={isVisible ? "text" : "password"}
                 />
                 {!isLogin && <Input
+                  isRequired
                   endContent={
                     <button
-                      aria-label="toggle password visibility"
+                      aria-label={isVisibleConfirm ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
                       className="focus:outline-none"
                       type="button"
-                      onClick={toggleVisibility}
+                      onClick={toggleVisibilityConfirm}
                     >
-                      {isVisible ? (
+                      {isVisibleConfirm ? (
                         <IconEyeClosed stroke={1.5} />
                       ) : (
                         <IconEye stroke={1.5} />
@@ -278,8 +283,8 @@ export default function Home() {
                   }
                   name="confirm_password"
                   label="Confirmar contraseña"
-                  placeholder="Confirmar contraseña contraseña"
-                  type={isVisible ? "text" : "password"}
+                  placeholder="Confirma tu contraseña"
+                  type={isVisibleConfirm ? "text" : "password"}
                 />}
                 {!isLogin && <div className="flex items-center gap-2">
                   <Checkbox isSelected={isTerms} onValueChange={setIsTerms} size="md" name="terms" required={!isLogin}>
@@ -289,6 +294,11 @@ export default function Home() {
                   </Checkbox>
                   <Link className="cursor-pointer" size="sm" underline="always" target="_blank" rel="noopener noreferrer" href="/terminos-y-condiciones">términos y condiciones</Link>
                 </div>}
+                {authError && (
+                  <p role="alert" aria-live="assertive" className="text-danger text-sm w-full">
+                    {authError}
+                  </p>
+                )}
                 {isLogin && <Link className="cursor-pointer" size="sm" color="primary" onPress={onOpen}>¿Olvidaste tu contraseña?</Link>}
                 <Button
                   type="submit" variant="solid" color="primary" size="md" isLoading={isLoading}>
@@ -298,11 +308,11 @@ export default function Home() {
             </CardBody>
             <CardFooter>
               <p className="text-white text-sm">¿No tienes cuenta aún? <Button
-                type="submit"
+                type="button"
                 variant="light"
                 color="primary"
                 size="md"
-                onPress={() => setIsLogin(!isLogin)}>
+                onPress={() => { setIsLogin(!isLogin); setAuthError(null); }}>
                 {isLogin ? "Registrate" : "Ingresar"}
               </Button></p>
             </CardFooter>
