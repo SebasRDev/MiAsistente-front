@@ -72,7 +72,7 @@ const Header = () => {
               <IconMenu2 stroke={2} />
             </Button>
           )}
-          <Image priority={true} src="/assets/logo_skh.webp" alt="Logo" width={55} height={55} />
+          <Image priority={true} src="/assets/logo_skh.webp" alt="SkinHealth" width={55} height={55} />
         </NavbarContent>
         {shouldShowFullHeader && <NavbarContent justify="center">
           <h1 className="text-md md:text-xl font-Trajan-pro-bold">{state.segment === 'formula' ? 'FORMULADOR' : 'COTIZADOR'}</h1>
@@ -101,7 +101,6 @@ const Header = () => {
         onClose={onClose}
         placement="left"
         backdrop="blur"
-        hideCloseButton
       >
         <DrawerContent>
           {() => (

@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Mi Asistente SkinHealth",
-  description: "Cotizador| Formulador Skinhealth Colombia",
+  description: "Cotizador | Formulador SkinHealth Colombia",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon-196.png",
@@ -191,24 +191,19 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  // Also supported but less commonly used
-  // interactiveWidget: 'resizes-visual',
 }
 
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
-        aria-label="Mi asistente SkinHealth"
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh formula`}
       >
         <Providers>
           <Toaster richColors position="top-right" />
           <Header />
-          <main className="text-foreground relative z-[1]">
+          <main id="main-content" tabIndex={-1} className="text-foreground relative z-[1]">
             {children}
           </main>
           <NavigationFooter />

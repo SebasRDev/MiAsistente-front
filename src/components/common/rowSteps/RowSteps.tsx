@@ -8,6 +8,7 @@ import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import { m, LazyMotion, domAnimation, AnimatePresence, motion } from 'framer-motion';
 import type {ComponentProps} from "react";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { useAuth } from "@/context/AuthContext";
@@ -181,6 +182,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
     ref,
   ) => {
     const { user, profile } = useAuth();
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useControlledState(
       currentStepProp,
       defaultStep,
@@ -360,6 +362,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
             const userDocRef = doc(db, 'users', user.uid);
             await setDoc(userDocRef, updatedUserData, { merge: true });
             toast.success('Información actualizada con éxito');
+            router.push('/productos');
           } catch (error) {
             console.error('Error al guardar tu información:', error);
             toast.error('Ocurrió un error al guardar tú información');

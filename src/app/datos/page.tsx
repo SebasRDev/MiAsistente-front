@@ -16,13 +16,13 @@ interface Field {
 
 const fields: Field[] = [
   {
-    label: "Nombre del ",
+    label: "Nombre del",
     name: 'client',
     type: 'text',
     segment: 'all'
   },
   {
-    label: "Télefono ",
+    label: "Teléfono",
     name: 'phone',
     type: 'tel',
     segment: 'all'
@@ -39,6 +39,7 @@ const fields: Field[] = [
     type: 'text',
     segment: 'quote'
   },
+
   {
     label: "Campaña",
     name: 'campaign',

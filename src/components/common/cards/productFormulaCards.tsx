@@ -53,10 +53,10 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
     </CardHeader>
     <CardBody>
       <div>
-        <h4>Horario de uso: {product.time}</h4>
+        <p>Horario de uso: <span className="font-medium">{product.time}</span></p>
       </div>
       <div>
-        <h4 className="text-lg font-bold">Valor</h4>
+        <p className="text-lg font-bold">Valor</p>
         <div className="flex gap-2 items-center">
           <div className={(product.discount > 0 || state.quote.generalDiscount > 0) ? 'relative after:content-[\'+\'] after:absolute after:right-0 after:h-0.5 after:w-full after:bg-primary after:rounded-full after:transition-all after:duration-300 after:top-[40%] after:translate-y-1/2' : ''}>
             <NumberFlow
@@ -89,11 +89,11 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
     </CardBody>
     <CardFooter className="flex items-center gap-4 flex-wrap">
       <Input
-        label="Desc"
+        label="Descuento (%)"
         labelPlacement="inside"
         endContent={
           <div className="pointer-events-none flex items-center">
-            <IconPercentage />
+            <IconPercentage aria-hidden="true" />
           </div>
         }
         type="tel"
@@ -105,26 +105,28 @@ export default function ProductFormulaCards({ product, handleBondades }: Product
       <div className="flex gap-2 items-center">
         <Button
           isIconOnly
+          aria-label="Reducir cantidad"
           variant="light"
           color="primary"
           size="sm"
           onPress={() => handleQuantity(-1)}
           isDisabled={productState.quantity === 1}
         >
-          <IconMinus />
+          <IconMinus aria-hidden="true" />
         </Button>
-        <NumberFlow value={productState.quantity} />
-        <Button isIconOnly variant="light" color="primary" size="sm" onPress={() => handleQuantity(1)}>
-          <IconPlus />
+        <NumberFlow value={productState.quantity} aria-label={`Cantidad: ${productState.quantity}`} />
+        <Button isIconOnly aria-label="Aumentar cantidad" variant="light" color="primary" size="sm" onPress={() => handleQuantity(1)}>
+          <IconPlus aria-hidden="true" />
         </Button>
       </div>
       <Button
         isIconOnly
+        aria-label={`Eliminar ${product.name}`}
         color="danger"
         size="sm"
         onPress={() => handleRemove()}
       >
-        <IconTrash />
+        <IconTrash aria-hidden="true" />
       </Button>
       <Button
         variant="solid"
