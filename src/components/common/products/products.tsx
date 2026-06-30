@@ -4,7 +4,13 @@ import { Autocomplete, AutocompleteItem, Drawer, DrawerBody, DrawerContent, Draw
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
 import { motion } from 'framer-motion';
-import { useRef, useState } from "react"
+import { ComponentProps, ComponentType, ReactNode, useRef, useState } from "react"
+
+// HeroUI's CollectionChildren<T> conflicts with React 19 JSX children inference when
+// using controlled inputValue — this cast restores standard ReactNode children typing.
+const ControlledAutocomplete = Autocomplete as unknown as ComponentType<
+  Omit<ComponentProps<typeof Autocomplete>, 'children'> & { children?: ReactNode }
+>;
 
 import { productOptions } from "@/app/productos/product"
 import ProductFormulaCards from "@/components/common/cards/productFormulaCards"
@@ -17,6 +23,7 @@ const Products = () => {
   const { state, dispatch } = useQuote();
   const { data } = useSuspenseQuery(productOptions);
   const [bondades, setBondades] = useState<Product | null>(null);
+  const [searchValue, setSearchValue] = useState("");
   const autocompleteRef = useRef<HTMLInputElement>(null);
   const size = useWindowSize();
   const filteredData = state.segment === 'formula' ? data.filter((product: Product) => product.publicPrice !== null) : data;
@@ -34,20 +41,19 @@ const Products = () => {
         instanceId: `${product.id}_${Date.now()}`
       }
     })
-    if (autocompleteRef.current) {
-      // Programáticamente cerrar el popover
-      (document.activeElement as HTMLElement)?.blur();
-    }
+    setSearchValue("");
+    (document.activeElement as HTMLElement)?.blur();
   }
 
   return (
     <>
-      <Autocomplete
+      <ControlledAutocomplete
         ref={autocompleteRef}
         className="w-full"
         label="Buscar productos"
         variant="bordered"
-        selectedKey=""
+        inputValue={searchValue}
+        onInputChange={setSearchValue}
         listboxProps={{
           emptyContent: "No se encontraron productos",
         }}>
@@ -55,6 +61,7 @@ const Products = () => {
           <AutocompleteItem
             key={product.code}
             textValue={`${product.code} - ${product.name}`}
+            className="h-auto py-2"
             onPress={() => handleSelect(product)}
             endContent={
               getProductCount(product.id) > 0 ? (
@@ -67,7 +74,7 @@ const Products = () => {
             {`-${product.name}`}
           </AutocompleteItem>
         ))}
-      </Autocomplete>
+      </ControlledAutocomplete>
       <div className="flex flex-col-reverse gap-4 mt-2">
         {state.segment === 'formula' &&
           state.products.map(product => (
