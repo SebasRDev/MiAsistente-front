@@ -54,6 +54,8 @@ const Products = () => {
         variant="bordered"
         inputValue={searchValue}
         onInputChange={setSearchValue}
+        isVirtualized={false}
+        inputProps={{ classNames: { input: "!text-base" } }}
         listboxProps={{
           emptyContent: "No se encontraron productos",
         }}>
