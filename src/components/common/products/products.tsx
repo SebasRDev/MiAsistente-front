@@ -6,10 +6,12 @@ import { useWindowSize } from "@uidotdev/usehooks"
 import { motion } from 'framer-motion';
 import { ComponentProps, ComponentType, ReactNode, useRef, useState } from "react"
 
-// HeroUI's CollectionChildren<T> conflicts with React 19 JSX children inference when
-// using controlled inputValue — this cast restores standard ReactNode children typing.
+// HeroUI components conflict with React 19 JSX children inference — these casts restore standard ReactNode children typing.
 const ControlledAutocomplete = Autocomplete as unknown as ComponentType<
   Omit<ComponentProps<typeof Autocomplete>, 'children'> & { children?: ReactNode }
+>;
+const ControlledDrawer = Drawer as unknown as ComponentType<
+  Omit<ComponentProps<typeof Drawer>, 'children'> & { children?: ReactNode }
 >;
 
 import { productOptions } from "@/app/productos/product"
@@ -54,7 +56,12 @@ const Products = () => {
         variant="bordered"
         inputValue={searchValue}
         onInputChange={setSearchValue}
-        onSelectionChange={() => setSearchValue("")}
+        selectedKey={null}
+        onSelectionChange={(key) => {
+          if (!key) return;
+          const product = filteredData?.find((p: Product) => p.code === key);
+          if (product) handleSelect(product);
+        }}
         isVirtualized={false}
         inputProps={{ classNames: { input: "!text-base" } }}
         listboxProps={{
@@ -65,7 +72,6 @@ const Products = () => {
             key={product.code}
             textValue={`${product.code} - ${product.name}`}
             className="h-auto py-2"
-            onPress={() => handleSelect(product)}
             endContent={
               getProductCount(product.id) > 0 ? (
                 <span className="text-primary font-bold">
@@ -89,7 +95,7 @@ const Products = () => {
             <ProductQuoteCards key={product.instanceId} product={product} />
           ))
         }
-        <Drawer size={(size?.width || 0) > 768 ? 'lg' : 'xl'} backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
+        <ControlledDrawer size={(size?.width || 0) > 768 ? 'lg' : 'xl'} backdrop="blur" isOpen={bondades !== null} placement={(size?.width || 0) > 768 ? 'right' : 'bottom'} onClose={() => setBondades(null)} hideCloseButton>
           <DrawerContent>
             <DrawerHeader
               className="px-8 bg-primary justify-center"
@@ -141,7 +147,7 @@ const Products = () => {
               </div>
             </DrawerBody>
           </DrawerContent>
-        </Drawer>
+        </ControlledDrawer>
       </div>
       <Textarea
         className="mt-4"
