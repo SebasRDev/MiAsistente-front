@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { Providers } from "@/app/providers";
 import Header from "@/components/common/header/Header";
 import NavigationFooter from "@/components/common/navigationFooter/NavigationFooter";
+import ProductCatalogSync from "@/components/common/products/ProductCatalogSync";
 
 
 const geistSans = Geist({
@@ -202,6 +203,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       >
         <Providers>
           <Toaster richColors position="top-right" />
+          <ProductCatalogSync />
           <Header />
           <main id="main-content" tabIndex={-1} className="text-foreground relative z-[1]">
             {children}
