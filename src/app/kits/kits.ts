@@ -12,6 +12,9 @@ export const kitsOptions = queryOptions({
     const orderedData = data.sort((a: Kit, b: Kit) => a.weight - b.weight);
     return orderedData;
   },
-  staleTime: 24 * 60 * 60 * 1000,
-  gcTime: 24 * 60 * 60 * 1000,
+  staleTime: 3 * 60 * 1000,
+  gcTime: 10 * 60 * 1000,
+  refetchOnMount: 'always',
+  refetchInterval: 2 * 60 * 1000,
+  refetchIntervalInBackground: false,
 });

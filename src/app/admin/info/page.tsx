@@ -1,8 +1,8 @@
 'use client';
 
-import { Button, ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@heroui/react";
+import { Button, ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@heroui/react";
 import { IconChevronDown, IconDownload, IconTrashX } from "@tabler/icons-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -33,11 +33,55 @@ const labelsMap: Record<OptionKey, string> = {
 
 export default function AdminProductsPage() {
   const { data } = useSuspenseQuery(productOptions);
+  const queryClient = useQueryClient();
   const [selectedOption, setSelectedOption] = useState<Set<OptionKey>>(new Set<OptionKey>(["products"]));
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const {isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange} = useDisclosure();
   const [isExporting, setIsExporting] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const selectedOptionValue: OptionKey = Array.from(selectedOption)[0];
+
+  const confirmDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+    onDeleteOpen();
+  };
+
+  const handleDeleteProduct = () => {
+    if (!productToDelete) return;
+    setIsDeleting(true);
+
+    fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/products/${productToDelete.id}`, {
+      method: 'DELETE',
+    })
+      .then(async (res) => {
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(body?.message || `HTTP error! status: ${res.status}`);
+        }
+
+        const affectedKits: string[] = body?.affectedKits ?? [];
+        toast.success(
+          affectedKits.length > 0
+            ? `Producto "${productToDelete.code}" eliminado. Kits recalculados: ${affectedKits.join(', ')}.`
+            : `Producto "${productToDelete.code}" eliminado correctamente.`
+        );
+
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        if (affectedKits.length > 0) {
+          queryClient.invalidateQueries({ queryKey: ['kits'] });
+        }
+      })
+      .catch((error) => {
+        console.error('Error deleting product:', error);
+        toast.error(`Ocurrió un error al eliminar el producto: ${error.message}`);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+        setProductToDelete(null);
+      });
+  };
 
   const handleExport = () => {
     setIsExporting(true);
@@ -133,9 +177,13 @@ export default function AdminProductsPage() {
               <TableCell>{item.profesionalPrice ? `$${item.profesionalPrice}` : 'N/A'}</TableCell>
               <TableCell>
                 <Tooltip content="Eliminar Producto" color="danger">
-                  <IconTrashX className='cursor-pointer' stroke={2} color='red' size={20} onClick={() => console.log(
-                    `Eliminar producto ${item.code}`
-                  )} />
+                  <IconTrashX
+                    className='cursor-pointer'
+                    stroke={2}
+                    color='red'
+                    size={20}
+                    onClick={() => confirmDeleteProduct(item)}
+                  />
                 </Tooltip>
               </TableCell>
             </TableRow>
@@ -151,6 +199,40 @@ export default function AdminProductsPage() {
           <ModalBody>
             <UploadModal option={selectedOptionValue}/>
           </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isDeleteOpen} placement="center" onOpenChange={onDeleteOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className='flex justify-center'>Eliminar producto</ModalHeader>
+              <ModalBody>
+                <p className='text-center'>
+                  ¿Está seguro que desea eliminar el producto{' '}
+                  <strong>{productToDelete?.code} — {productToDelete?.name}</strong>?{' '}
+                  Si el producto está en algún kit, se quitará de ahí y el precio del kit
+                  se recalculará automáticamente. Esta acción no se puede deshacer.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  variant="light"
+                  onPress={() => { setProductToDelete(null); onClose(); }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  color="danger"
+                  isLoading={isDeleting}
+                  onPress={() => { handleDeleteProduct(); onClose(); }}
+                >
+                  Eliminar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </div>

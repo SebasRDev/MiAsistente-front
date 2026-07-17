@@ -1,6 +1,6 @@
 'use client';
-import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@heroui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { FilePondFile } from "filepond";
 import 'filepond/dist/filepond.min.css'
 import { useState } from "react";
@@ -23,11 +23,33 @@ const endpointsMap: Record<string, string> = {
   kits: "kits/file",
 };
 
+interface ItemError {
+  code?: string;
+  name?: string;
+  error: string;
+}
+
+interface UploadResponse {
+  message?: string;
+  result?: {
+    created: number;
+    updated: number;
+    deleted?: number;
+    errors?: ItemError[];
+    details?: {
+      affectedKits?: string[];
+    };
+  };
+}
+
 export default function UploadModal({option} : {option: string}) {
   const queryClient = useQueryClient();
   const [files, setFiles] = useState<FilePondFile[]>([])
-  const [response, setResponse] = useState<any>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [response, setResponse] = useState<UploadResponse | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   const handleUpload = () => {
     if (files.length === 0){
@@ -37,17 +59,34 @@ export default function UploadModal({option} : {option: string}) {
 
     const formData = new FormData();
     formData.append('file', files[0].file);
+    setIsSubmitting(true);
 
     fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_BASE}/api/${endpointsMap[option]}`, {
       method: 'POST',
       body: formData,
     })
-      .then(response => response.json())
-      .then(data => {
-        setIsUploading(true);
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(data?.message || `Error ${res.status} al subir el archivo.`);
+        }
+        return data as UploadResponse;
+      })
+      .then((data) => {
         setResponse(data);
-        console.log('Success:', data);
-        toast.success(`${translationsMap[option]} actualizados correctamente.`);
+        setUploadError(null);
+        setShowResult(true);
+        setAttempt((a) => a + 1);
+
+        const itemErrors = data?.result?.errors ?? [];
+        if (!data?.result) {
+          toast.warning(data?.message || `No se encontraron ${translationsMap[option]} válidos en el archivo.`);
+        } else if (itemErrors.length > 0) {
+          toast.warning(`${translationsMap[option]} procesados con ${itemErrors.length} error(es). Revisa el detalle.`);
+        } else {
+          toast.success(`${translationsMap[option]} actualizados correctamente.`);
+        }
+
         queryClient.invalidateQueries({ queryKey: [option] });
         if (option === 'products') {
           queryClient.invalidateQueries({ queryKey: ['kits'] });
@@ -55,13 +94,15 @@ export default function UploadModal({option} : {option: string}) {
       })
       .catch((error) => {
         console.error('Error:', error);
-        toast.error('Ocurrió un error al subir el archivo.');
+        setResponse(null);
+        setUploadError(error.message || 'Ocurrió un error al subir el archivo.');
+        setShowResult(true);
+        setAttempt((a) => a + 1);
+        toast.error(`Error al subir ${translationsMap[option]}: ${error.message}`);
       })
       .finally(() => {
-        setTimeout(() => {
-          setIsUploading(false);
-        }, 5000);
-        setTimeout(() => setFiles([]) , 5500);
+        setIsSubmitting(false);
+        setFiles([]);
       });
 
   }
@@ -82,26 +123,41 @@ export default function UploadModal({option} : {option: string}) {
         name="file"
         labelIdle='Arrasta tus archivos o <span class="filepond--label-action">Buscalos</span>'
       />
-      {isUploading && <Terminal>
+      {showResult && <Terminal key={attempt}>
         <TypingAnimation>{`Actualizando ${translationsMap[option]} desde el archivo`}</TypingAnimation>
-        <AnimatedSpan className="text-green-500">
-          ✔ {translationsMap[option]} creados {response?.result?.created}.
-        </AnimatedSpan>
-        <AnimatedSpan className="text-green-500">
-          ✔ {translationsMap[option]} actualizados {response?.result?.updated}.
-        </AnimatedSpan>
-        {option === 'products' && <>
-          <AnimatedSpan className={response?.result?.deleted > 0 ? "text-red-500" : "text-green-500"}>
-            {response?.result?.deleted > 0 ? '⚠' : '✔'} productos eliminados {response?.result?.deleted ?? 0}.
+        {uploadError ? (
+          <AnimatedSpan className="text-red-500">
+            ✘ Error: {uploadError}
           </AnimatedSpan>
-          {response?.result?.details?.affectedKits?.length > 0 && (
-            <AnimatedSpan className="text-yellow-500">
-              ⚠ kits recalculados: {response.result.details.affectedKits.join(', ')}
+        ) : !response?.result ? (
+          <AnimatedSpan className="text-yellow-500">
+            ⚠ {response?.message || `No se encontraron ${translationsMap[option]} válidos en el archivo.`}
+          </AnimatedSpan>
+        ) : <>
+          <AnimatedSpan className="text-green-500">
+            ✔ {translationsMap[option]} creados {response.result.created ?? 0}.
+          </AnimatedSpan>
+          <AnimatedSpan className="text-green-500">
+            ✔ {translationsMap[option]} actualizados {response.result.updated ?? 0}.
+          </AnimatedSpan>
+          {option === 'products' && <>
+            <AnimatedSpan className={(response.result.deleted ?? 0) > 0 ? "text-red-500" : "text-green-500"}>
+              {(response.result.deleted ?? 0) > 0 ? '⚠' : '✔'} productos eliminados {response.result.deleted ?? 0}.
+            </AnimatedSpan>
+            {(response.result.details?.affectedKits?.length ?? 0) > 0 && (
+              <AnimatedSpan className="text-yellow-500">
+                ⚠ kits recalculados: {response.result.details!.affectedKits!.join(', ')}
+              </AnimatedSpan>
+            )}
+          </>}
+          {(response.result.errors?.length ?? 0) > 0 && (
+            <AnimatedSpan className="text-red-500">
+              ✘ {response.result.errors!.length} con error: {response.result.errors!.map((e) => `${e.code ?? e.name} (${e.error})`).join(', ')}
             </AnimatedSpan>
           )}
         </>}
       </Terminal>}
-      <Button className="mt-4" onPress={handleUpload}>Subir archivos</Button>
+      <Button className="mt-4" onPress={handleUpload} isLoading={isSubmitting}>Subir archivos</Button>
     </>
   );
 }
